@@ -44,14 +44,16 @@ export default function FormPage({changePage}: props){
 
     const { user } = useUser()
     const email = user?.primaryEmailAddress?.emailAddress;
-    console.log(email)
-    const [value, setValue] = useState(50);
     const [questionNumber, setQuestionNumber] = useState(0);
     const [checkComplete, setCheckComplete] = useState(false);
-    const [optionSelected, setOptionSelected] = useState(-1);
+    const [questionData, setQuestionData] = useState({
+        "optionSelected": -1,
+        "weightage": 50
+    });
+
     const handleChange = (event:any) => {
         let val = event.target.value
-        setValue(val);
+        setQuestionData({...questionData, "weightage": val})
         const insertData = async () => {
             const supabase = await createClerkSupabaseClient();
             const { data, error } = await supabase
@@ -69,13 +71,11 @@ export default function FormPage({changePage}: props){
             const { data, error } = await supabase
             .from('Form-responses')
             .upsert([{"email": email, "q_num": questionNumber, "response": answer}], { onConflict: 'email, q_num'} )
-            setOptionSelected(answer)
+            setQuestionData({...questionData,"optionSelected": answer })
         };
       
         insertData();
-    }
-
-    
+    }    
 
     const checkCompleted = async () => {
         const supabase = await createClerkSupabaseClient();
@@ -96,23 +96,34 @@ export default function FormPage({changePage}: props){
         const supabase = await createClerkSupabaseClient();
         const { data, error} = await supabase
         .from('Form-responses')
-        .select('response')
+        .select('response, weightage')
         .eq('email', email)
         .eq('q_num', q_num)
         console.log(data);
         if(data != null){
-            setOptionSelected(data[0].response);
+            setQuestionData({"optionSelected": data[q_num].response, "weightage": data[q_num].weightage});
         }
     };
     
 
-    
+    function handleNext(){
+        setQuestionNumber(questionNumber + 1);
+        checkCurrentQuestion(questionNumber)
+        
+    }
+
+    function handlePrev(){
+        setQuestionNumber(questionNumber - 1);
+        checkCurrentQuestion(questionNumber)
+    }
 
 
     useEffect(() => {
         let val = checkCurrentQuestion(0)
         console.log("val = " + val)
     }, []);
+
+    const {optionSelected, weightage} = questionData;
 
     return (
             <div className="flex flex-col w-[80%] mx-32 h-screen">
@@ -141,17 +152,17 @@ export default function FormPage({changePage}: props){
                                     type="range"
                                     min="0"
                                     max="100"
-                                    value={value}
+                                    value={questionData.weightage}
                                     onChange={handleChange}
                                 />
-                                <p>{value}</p>
+                                <p>{questionData.weightage}</p>
                             </div>
 
                         </Card>
                         <div className="flex flex-col">
                             <div className="flex flex-row justify-between">
-                                <button disabled={questionNumber === 0 } onClick={()=>setQuestionNumber(questionNumber - 1)}>Previous</button>
-                                <button disabled={questionNumber === QUESTIONS.length - 1} onClick={()=>setQuestionNumber(questionNumber + 1)}>Next</button>
+                                <button disabled={questionNumber === 0 } onClick={handlePrev}>Previous</button>
+                                <button disabled={questionNumber === QUESTIONS.length - 1} onClick={handleNext}>Next</button>
                             </div>
                             <div className="w-full flex justify-center mt-8">
                                 {checkComplete &&  <button>
