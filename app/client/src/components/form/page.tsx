@@ -1,19 +1,119 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { QUESTIONS } from "./questions";
+import { useSession, useUser } from '@clerk/nextjs'
+import { createClient } from '@supabase/supabase-js'
 
 type props={
   changePage: (page: string) => void;
 }
 
 export default function FormPage({changePage}: props){
-    const [value, setValue] = useState(30);
-    const [questionNumber, setQuestionNumber] = useState(0);
+    const { session } = useSession()
+	
+	// Create a custom supabase client that injects the Clerk Supabase token into the request headers
+	function createClerkSupabaseClient() {
+	  return createClient(
+	    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+	    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+	    {
+	      global: {
+	        // Get the custom Supabase token from Clerk
+	        fetch: async (url, options = {}) => {
+		        // The Clerk `session` object has the getToken() method      
+	          const clerkToken = await session?.getToken({
+		          // Pass the name of the JWT template you created in the Clerk Dashboard
+		          // For this tutorial, you named it 'supabase'
+	            template: 'supabase',
+	          })
+	          
+	          // Insert the Clerk Supabase token into the headers
+		        const headers = new Headers(options?.headers)
+	          headers.set('Authorization', `Bearer ${clerkToken}`)
+	          
+	          // Call the default fetch
+	          return fetch(url, {
+	            ...options,
+	            headers,
+	          })
+	        },
+	      },
+	    },
+	  )
+	}
 
+    const { user } = useUser()
+    const email = user?.primaryEmailAddress?.emailAddress;
+    console.log(email)
+    const [value, setValue] = useState(50);
+    const [questionNumber, setQuestionNumber] = useState(0);
+    const [checkComplete, setCheckComplete] = useState(false);
+    const [optionSelected, setOptionSelected] = useState(-1);
     const handleChange = (event:any) => {
-        setValue(event.target.value);
-      };
+        let val = event.target.value
+        setValue(val);
+        const insertData = async () => {
+            const supabase = await createClerkSupabaseClient();
+            const { data, error } = await supabase
+            .from('Form-responses')
+            .upsert([{"email": email, "q_num": questionNumber, "weightage": val}], { onConflict: 'email, q_num'} )
+            console.log(error)
+        };
+      
+        insertData();
+    };
+
+    function handleQuestionChange(answer: number){
+        const insertData = async () => {
+            const supabase = await createClerkSupabaseClient();
+            const { data, error } = await supabase
+            .from('Form-responses')
+            .upsert([{"email": email, "q_num": questionNumber, "response": answer}], { onConflict: 'email, q_num'} )
+            setOptionSelected(answer)
+        };
+      
+        insertData();
+    }
+
     
+
+    const checkCompleted = async () => {
+        const supabase = await createClerkSupabaseClient();
+        const { data, error } = await supabase
+            .from('Form-responses')
+            .select()
+            .eq('email', email)
+        if(error == null){
+            setCheckComplete(data.length == QUESTIONS.length);
+        }else{
+            setCheckComplete(false);
+        }
+    };
+    checkCompleted()
+    
+
+    const checkCurrentQuestion = async (q_num: number) => {
+        const supabase = await createClerkSupabaseClient();
+        const { data, error} = await supabase
+        .from('Form-responses')
+        .select('response')
+        .eq('email', email)
+        .eq('q_num', q_num)
+        console.log(data);
+        if(data != null){
+            setOptionSelected(data[0].response);
+        }
+    };
+    
+
+    
+
+
+    useEffect(() => {
+        let val = checkCurrentQuestion(0)
+        console.log("val = " + val)
+    }, []);
+
     return (
             <div className="flex flex-col w-[80%] mx-32 h-screen">
                 <div className="flex">
@@ -28,8 +128,13 @@ export default function FormPage({changePage}: props){
                         <Card>
                             <div className="bg-white p-8 h-full w-full flex flex-col items-center">
                                 <header className="text-5xl mb-8">{QUESTIONS[questionNumber].question}</header>
-                                {QUESTIONS[questionNumber].options.map((option)=>{
-                                    return <button className="w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">{option}</button>
+                                {QUESTIONS[questionNumber].options.map((option, key)=>{
+                                    console.log(optionSelected + " " + key);
+                                    if(optionSelected == key){
+                                        console.log("option selected = " + optionSelected)
+                                    }
+                                    let className = optionSelected == key ? "w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ring-4 outline-none ring-cyan-300 dark:ring-cyan-800" : "w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                                    return <button key={key} onClick={()=>handleQuestionChange(key)} className={className}>{option}</button>;
                                 })}
                                 <p className="mt-8">How much does this matter to you on a scale of 0-100?</p>
                                 <input
@@ -43,10 +148,19 @@ export default function FormPage({changePage}: props){
                             </div>
 
                         </Card>
-                        <div className="flex flex-row justify-between">
-                            <button disabled={questionNumber === 0}>Previous</button>
-                            <button disabled={questionNumber === QUESTIONS.length - 1}>Next</button>
+                        <div className="flex flex-col">
+                            <div className="flex flex-row justify-between">
+                                <button disabled={questionNumber === 0 } onClick={()=>setQuestionNumber(questionNumber - 1)}>Previous</button>
+                                <button disabled={questionNumber === QUESTIONS.length - 1} onClick={()=>setQuestionNumber(questionNumber + 1)}>Next</button>
+                            </div>
+                            <div className="w-full flex justify-center mt-8">
+                                {checkComplete &&  <button>
+                                    SUBMIT
+                                </button>}
+                                
+                            </div>
                         </div>
+                        
 
                     </main>
                 </div>

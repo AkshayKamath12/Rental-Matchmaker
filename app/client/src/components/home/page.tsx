@@ -1,4 +1,4 @@
-
+import { useUser } from '@clerk/clerk-react'
 
 type props = {
   changePage: (page: string) => void;
@@ -6,10 +6,12 @@ type props = {
 
 
 export default function HomePage({changePage}: props) {
+  const { isSignedIn, user, isLoaded } = useUser()
+
 
   return (
     <div className="bg-gray-100 items-center flex flex-col h-screen w-screen">
-      <header className="">Rental Matchmaker</header>
+      <header className="text-6xl">Hello {user?.fullName}</header>
       <table className="w-3/4 h-1/2 my-8">
         <tbody>
           <tr className="text-center">

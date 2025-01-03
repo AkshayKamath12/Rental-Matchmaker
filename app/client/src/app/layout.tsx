@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  SignIn
+} from '@clerk/nextjs'
+import { hash } from "crypto";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,12 +20,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
-  );
+      <html lang="en">
+        <body>
+          <ClerkProvider>
+            <header className="flex justify-end bg-gray-100">
+              
+              <UserButton showName/>
+            </header>
+            <SignedOut>
+              <SignIn routing="hash"/>
+            </SignedOut>
+            <SignedIn>
+            {children}
+            </SignedIn>
+          </ClerkProvider>
+        </body>
+      </html>
+  )
 }
