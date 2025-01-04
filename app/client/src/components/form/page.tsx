@@ -118,6 +118,18 @@ export default function FormPage({changePage}: props){
         checkCurrentQuestion(prevQuestion)
     }
 
+    function handleSubmit(){
+        const submit = async () => {
+            const supabase = await createClerkSupabaseClient();
+            const {error} = await supabase
+            .from('Submitted-users')
+            .upsert([{"email": email}], { onConflict: 'email'} )
+            console.log(error)
+        };
+        submit()
+        changePage('0')
+    }
+
 
     useEffect(() => {
         let val = checkCurrentQuestion(0)
@@ -162,7 +174,7 @@ export default function FormPage({changePage}: props){
                                 <button disabled={questionNumber === QUESTIONS.length - 1} onClick={handleNext}>Next</button>
                             </div>
                             <div className="w-full flex justify-center mt-8">
-                                {checkComplete &&  <button>
+                                {checkComplete &&  <button onClick={handleSubmit}>
                                     SUBMIT
                                 </button>}
                                 
