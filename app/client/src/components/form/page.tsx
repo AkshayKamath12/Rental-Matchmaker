@@ -44,9 +44,9 @@ export default function FormPage({changePage}: props){
 
     const { user } = useUser()
     const email = user?.primaryEmailAddress?.emailAddress;
-    const [questionNumber, setQuestionNumber] = useState(0);
     const [checkComplete, setCheckComplete] = useState(false);
     const [questionData, setQuestionData] = useState({
+        "questionNumber": 0,
         "optionSelected": -1,
         "weightage": 50
     });
@@ -66,14 +66,13 @@ export default function FormPage({changePage}: props){
     };
 
     function handleQuestionChange(answer: number){
+        setQuestionData({...questionData, "optionSelected": answer })
         const insertData = async () => {
             const supabase = await createClerkSupabaseClient();
             const { data, error } = await supabase
             .from('Form-responses')
-            .upsert([{"email": email, "q_num": questionNumber, "response": answer}], { onConflict: 'email, q_num'} )
-            setQuestionData({...questionData,"optionSelected": answer })
+            .upsert([{"email": email, "q_num": questionNumber, "response": answer}], { onConflict: 'email, q_num'} ) 
         };
-      
         insertData();
     }    
 
@@ -100,21 +99,23 @@ export default function FormPage({changePage}: props){
         .eq('email', email)
         .eq('q_num', q_num)
         console.log(data);
-        if(data != null){
-            setQuestionData({"optionSelected": data[q_num].response, "weightage": data[q_num].weightage});
+        if(data != null && data.length == 1 ){
+            setQuestionData({"questionNumber": q_num, "optionSelected": data[0].response, "weightage": data[0].weightage});
         }
     };
     
 
     function handleNext(){
-        setQuestionNumber(questionNumber + 1);
-        checkCurrentQuestion(questionNumber)
+        let nextQuestion = questionNumber + 1;
+        setQuestionData({"questionNumber": nextQuestion, "optionSelected": -1, "weightage": 50})
+        checkCurrentQuestion(nextQuestion)
         
     }
 
     function handlePrev(){
-        setQuestionNumber(questionNumber - 1);
-        checkCurrentQuestion(questionNumber)
+        let prevQuestion = questionNumber - 1;
+        setQuestionData({"questionNumber": prevQuestion, "optionSelected": -1, "weightage": 50})
+        checkCurrentQuestion(prevQuestion)
     }
 
 
@@ -123,8 +124,8 @@ export default function FormPage({changePage}: props){
         console.log("val = " + val)
     }, []);
 
-    const {optionSelected, weightage} = questionData;
-
+    const {questionNumber, optionSelected, weightage} = questionData;
+    console.log(questionNumber)
     return (
             <div className="flex flex-col w-[80%] mx-32 h-screen">
                 <div className="flex">
@@ -140,10 +141,6 @@ export default function FormPage({changePage}: props){
                             <div className="bg-white p-8 h-full w-full flex flex-col items-center">
                                 <header className="text-5xl mb-8">{QUESTIONS[questionNumber].question}</header>
                                 {QUESTIONS[questionNumber].options.map((option, key)=>{
-                                    console.log(optionSelected + " " + key);
-                                    if(optionSelected == key){
-                                        console.log("option selected = " + optionSelected)
-                                    }
                                     let className = optionSelected == key ? "w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ring-4 outline-none ring-cyan-300 dark:ring-cyan-800" : "w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
                                     return <button key={key} onClick={()=>handleQuestionChange(key)} className={className}>{option}</button>;
                                 })}
