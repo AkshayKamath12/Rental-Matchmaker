@@ -34,6 +34,7 @@
     "pg": "^8.12.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-google-autocomplete": "^2.7.3",
     "react-hook-form": "^7.53.0",
     "supabase": "^2.2.1",
     "tailwind-merge": "^2.5.2",

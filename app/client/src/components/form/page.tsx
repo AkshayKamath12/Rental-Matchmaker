@@ -3,46 +3,16 @@ import { Card } from "@/components/ui/card"
 import { QUESTIONS } from "./questions";
 import { useSession, useUser } from '@clerk/nextjs'
 import { createClient } from '@supabase/supabase-js'
+import createClerkSupabaseClient from "../helpers/createClient";
 
 type props={
   changePage: (page: string) => void;
 }
 
-export default function FormPage({changePage}: props){
-    const { session } = useSession()
-	
-	// Create a custom supabase client that injects the Clerk Supabase token into the request headers
-	function createClerkSupabaseClient() {
-	  return createClient(
-	    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-	    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-	    {
-	      global: {
-	        // Get the custom Supabase token from Clerk
-	        fetch: async (url, options = {}) => {
-		        // The Clerk `session` object has the getToken() method      
-	          const clerkToken = await session?.getToken({
-		          // Pass the name of the JWT template you created in the Clerk Dashboard
-		          // For this tutorial, you named it 'supabase'
-	            template: 'supabase',
-	          })
-	          
-	          // Insert the Clerk Supabase token into the headers
-		        const headers = new Headers(options?.headers)
-	          headers.set('Authorization', `Bearer ${clerkToken}`)
-	          
-	          // Call the default fetch
-	          return fetch(url, {
-	            ...options,
-	            headers,
-	          })
-	        },
-	      },
-	    },
-	  )
-	}
+export default function FormPage({changePage}: props){	
 
     const { user } = useUser()
+    const {session} = useSession();
     const email = user?.primaryEmailAddress?.emailAddress;
     const [checkComplete, setCheckComplete] = useState(false);
     const [questionData, setQuestionData] = useState({
@@ -55,11 +25,13 @@ export default function FormPage({changePage}: props){
         let val = event.target.value
         setQuestionData({...questionData, "weightage": val})
         const insertData = async () => {
-            const supabase = await createClerkSupabaseClient();
+            const supabase = await createClerkSupabaseClient(session);
             const { data, error } = await supabase
             .from('Form-responses')
             .upsert([{"email": email, "q_num": questionNumber, "weightage": val}], { onConflict: 'email, q_num'} )
-            console.log(error)
+            if(error){
+                console.log(error)
+            }
         };
       
         insertData();
@@ -68,7 +40,7 @@ export default function FormPage({changePage}: props){
     function handleQuestionChange(answer: number){
         setQuestionData({...questionData, "optionSelected": answer })
         const insertData = async () => {
-            const supabase = await createClerkSupabaseClient();
+            const supabase = await createClerkSupabaseClient(session);
             const { data, error } = await supabase
             .from('Form-responses')
             .upsert([{"email": email, "q_num": questionNumber, "response": answer}], { onConflict: 'email, q_num'} ) 
@@ -77,7 +49,7 @@ export default function FormPage({changePage}: props){
     }    
 
     const checkCompleted = async () => {
-        const supabase = await createClerkSupabaseClient();
+        const supabase = await createClerkSupabaseClient(session);
         const { data, error } = await supabase
             .from('Form-responses')
             .select()
@@ -92,13 +64,12 @@ export default function FormPage({changePage}: props){
     
 
     const checkCurrentQuestion = async (q_num: number) => {
-        const supabase = await createClerkSupabaseClient();
+        const supabase = await createClerkSupabaseClient(session);
         const { data, error} = await supabase
         .from('Form-responses')
         .select('response, weightage')
         .eq('email', email)
         .eq('q_num', q_num)
-        console.log(data);
         if(data != null && data.length == 1 ){
             setQuestionData({"questionNumber": q_num, "optionSelected": data[0].response, "weightage": data[0].weightage});
         }
@@ -120,31 +91,32 @@ export default function FormPage({changePage}: props){
 
     function handleSubmit(){
         const submit = async () => {
-            const supabase = await createClerkSupabaseClient();
+            const supabase = await createClerkSupabaseClient(session);
             const {error} = await supabase
             .from('Submitted-users')
             .upsert([{"email": email}], { onConflict: 'email'} )
-            console.log(error)
+            if(error){
+                console.log(error)
+            }
         };
         submit()
-        changePage('0')
+        changePage('1')
     }
 
+    
 
     useEffect(() => {
-        let val = checkCurrentQuestion(0)
-        console.log("val = " + val)
+        checkCurrentQuestion(0)
     }, []);
 
     const {questionNumber, optionSelected, weightage} = questionData;
-    console.log(questionNumber)
     return (
             <div className="flex flex-col w-[80%] mx-32 h-screen">
                 <div className="flex">
                     <main className="flex-1 p-6 w-full overflow-auto">
                         <header className="flex justify-between items-center mb-4">
                             <div className="flex flex-col items-center space-x-4">
-                                <button onClick={()=>{changePage('0')}}>{"<--- Back"}
+                                <button onClick={()=>{changePage('1')}}>{"<--- Back"}
                                 </button>
                             </div>
 
