@@ -2,6 +2,7 @@ package com.rentmatch.app.service;
 
 import com.rentmatch.app.dao.QuestionDAO;
 import com.rentmatch.app.entity.Question;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +26,17 @@ public class QuestionServiceImpl implements QuestionService {
         questionDAO.saveQuestion(question);
     }
     */
+
+    @Override
+    public Question findQuestion(String username, int questionNumber) {
+        return questionDAO.findQuestion(username, questionNumber);
+    }
+
+    @Override
+    @Transactional
+    public void saveQuestion(Question question) {
+        questionDAO.saveQuestion(question);
+    }
 
     @Override
     public List<Question> findAll(String username) {

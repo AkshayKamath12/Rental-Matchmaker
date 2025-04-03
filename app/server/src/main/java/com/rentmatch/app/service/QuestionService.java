@@ -7,9 +7,9 @@ import java.util.List;
 
 
 public interface QuestionService {
-    //Question findQuestion(String username, int questionNumber);
+    Question findQuestion(String username, int questionNumber);
 
-    //void saveQuestion(Question question);
+    void saveQuestion(Question question);
 
     List<Question> findAll(String username);
 }

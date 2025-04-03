@@ -25,15 +25,15 @@ public class QuestionController {
         }
         return null;
     }
-    @GetMapping("/questions")
+    @GetMapping("/answers")
     public List<Question> getQuestions() {
-        System.out.println(getLoggedUser());
-        return questionService.findAll("john");
+        String loggedUser = getLoggedUser();
+        return questionService.findAll(loggedUser);
     }
-    /*
-    @GetMapping("/answer/{questionNum}")
+
+    @GetMapping("/answers/{questionNum}")
     public Question getQuestion(@PathVariable int questionNum) {
-        String loggedUser = "john";
+        String loggedUser = getLoggedUser();
         if (loggedUser != null) {
             return questionService.findQuestion(loggedUser, questionNum);
         }else {
@@ -41,14 +41,15 @@ public class QuestionController {
         }
     }
 
-    @PostMapping("/answer")
+    @PostMapping("/answers")
     public void setQuestion(@RequestBody Question question) {
         String loggedUser = getLoggedUser();
+        question.setUsername(loggedUser);
         if (loggedUser != null) {
             questionService.saveQuestion(question);
         }
     }
-    */
+
 
 
 }

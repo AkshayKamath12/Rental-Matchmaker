@@ -17,7 +17,7 @@ public class QuestionDAOImpl implements QuestionDAO {
 
     @Override
     public Question findQuestion(String username, int questionNumber) {
-        TypedQuery<Question> query = em.createQuery("From Question where username=:username AND answer=:questionNumber", Question.class);
+        TypedQuery<Question> query = em.createQuery("From Question where username=:username AND question=:questionNumber", Question.class);
         query.setParameter("username", username);
         query.setParameter("questionNumber", questionNumber);
         List<Question> questions = query.getResultList();
