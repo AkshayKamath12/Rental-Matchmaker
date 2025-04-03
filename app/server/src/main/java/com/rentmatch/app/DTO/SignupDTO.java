@@ -1,4 +1,4 @@
-package com.rentmatch.app.DTO;
+package com.rentmatch.app.dto;
 
 import lombok.Data;
 

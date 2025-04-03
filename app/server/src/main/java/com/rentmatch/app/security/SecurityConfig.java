@@ -1,5 +1,6 @@
 package com.rentmatch.app.security;
 
+import com.rentmatch.app.jwt.JwtService;
 import com.rentmatch.app.service.QuestionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
 
@@ -25,9 +27,11 @@ import javax.sql.DataSource;
 @EnableMethodSecurity
 public class SecurityConfig {
     private UserDetailsService userDetailsService;
+    private JwtService jwtService;
 
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    public SecurityConfig(UserDetailsService userDetailsService, JwtService jwtService) {
         this.userDetailsService = userDetailsService;
+        this.jwtService = jwtService;
     }
 
     @Bean
@@ -49,7 +53,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .anyRequest().authenticated()
 
-                );
+                ).addFilterBefore(jwtService, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
