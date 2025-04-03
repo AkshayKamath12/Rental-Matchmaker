@@ -1,5 +1,6 @@
 package com.rentmatch.app.controller;
 
+import com.rentmatch.app.DTO.LoginDTO;
 import com.rentmatch.app.DTO.SignupDTO;
 import com.rentmatch.app.dao.RoleRepository;
 import com.rentmatch.app.dao.UserRepository;
@@ -7,6 +8,9 @@ import com.rentmatch.app.entity.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.rentmatch.app.entity.User;
@@ -50,5 +54,12 @@ public class AuthController {
 
         return new ResponseEntity<>("user created", HttpStatus.OK);
 
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody LoginDTO loginDTO) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsernameOrEmail(), loginDTO.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return new ResponseEntity<>("Authentication successful", HttpStatus.OK);
     }
 }
