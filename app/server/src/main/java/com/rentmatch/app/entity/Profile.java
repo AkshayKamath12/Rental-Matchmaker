@@ -10,6 +10,17 @@ public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String username;
     private String city;
     private String state;
+
+    public Profile() {}
+
+    public Profile(String username, String city, String state) {
+        this.username = username;
+        this.city = city;
+        this.state = state;
+    }
+
+
 }
