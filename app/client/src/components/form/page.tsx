@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
 import { QUESTIONS } from "./questions";
-import { useSession, useUser } from '@clerk/nextjs'
-import { createClient } from '@supabase/supabase-js'
-import createClerkSupabaseClient from "../helpers/createClient";
+
 
 type props={
   changePage: (page: string) => void;
@@ -11,9 +8,7 @@ type props={
 
 export default function FormPage({changePage}: props){	
 
-    const { user } = useUser()
-    const {session} = useSession();
-    const email = user?.primaryEmailAddress?.emailAddress;
+
     const [checkComplete, setCheckComplete] = useState(false);
     const [questionData, setQuestionData] = useState({
         "questionNumber": 0,
@@ -25,54 +20,24 @@ export default function FormPage({changePage}: props){
         let val = event.target.value
         setQuestionData({...questionData, "weightage": val})
         const insertData = async () => {
-            const supabase = await createClerkSupabaseClient(session);
-            const { data, error } = await supabase
-            .from('Form-responses')
-            .upsert([{"email": email, "q_num": questionNumber, "weightage": val}], { onConflict: 'email, q_num'} )
-            if(error){
-                console.log(error)
-            }
+
         };
       
         insertData();
     };
 
     function handleQuestionChange(answer: number){
-        setQuestionData({...questionData, "optionSelected": answer })
-        const insertData = async () => {
-            const supabase = await createClerkSupabaseClient(session);
-            const { data, error } = await supabase
-            .from('Form-responses')
-            .upsert([{"email": email, "q_num": questionNumber, "response": answer}], { onConflict: 'email, q_num'} ) 
-        };
-        insertData();
+
     }    
 
     const checkCompleted = async () => {
-        const supabase = await createClerkSupabaseClient(session);
-        const { data, error } = await supabase
-            .from('Form-responses')
-            .select()
-            .eq('email', email)
-        if(error == null){
-            setCheckComplete(data.length == QUESTIONS.length);
-        }else{
-            setCheckComplete(false);
-        }
+
     };
     checkCompleted()
     
 
     const checkCurrentQuestion = async (q_num: number) => {
-        const supabase = await createClerkSupabaseClient(session);
-        const { data, error} = await supabase
-        .from('Form-responses')
-        .select('response, weightage')
-        .eq('email', email)
-        .eq('q_num', q_num)
-        if(data != null && data.length == 1 ){
-            setQuestionData({"questionNumber": q_num, "optionSelected": data[0].response, "weightage": data[0].weightage});
-        }
+
     };
     
 
@@ -91,13 +56,7 @@ export default function FormPage({changePage}: props){
 
     function handleSubmit(){
         const submit = async () => {
-            const supabase = await createClerkSupabaseClient(session);
-            const {error} = await supabase
-            .from('Submitted-users')
-            .upsert([{"email": email}], { onConflict: 'email'} )
-            if(error){
-                console.log(error)
-            }
+
         };
         submit()
         changePage('1')
@@ -121,7 +80,7 @@ export default function FormPage({changePage}: props){
                             </div>
 
                         </header>
-                        <Card>
+                        <div id="card">
                             <div className="bg-white p-8 h-full w-full flex flex-col items-center">
                                 <header className="text-5xl mb-8">{QUESTIONS[questionNumber].question}</header>
                                 {QUESTIONS[questionNumber].options.map((option, key)=>{
@@ -139,7 +98,7 @@ export default function FormPage({changePage}: props){
                                 <p>{questionData.weightage}</p>
                             </div>
 
-                        </Card>
+                        </div>
                         <div className="flex flex-col">
                             <div className="flex flex-row justify-between">
                                 <button disabled={questionNumber === 0 } onClick={handlePrev}>Previous</button>

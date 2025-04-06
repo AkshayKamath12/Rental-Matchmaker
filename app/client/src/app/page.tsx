@@ -5,12 +5,10 @@ import HomePage from "@/components/home/page"
 import FormPage from "@/components/form/page";
 import MatchesPage from "@/components/matches/page";
 import DemographicPage from "@/components/demographics/page";
-import { useSession, useUser } from '@clerk/nextjs'
-import { createClient } from '@supabase/supabase-js'
+
 
 export default function App() {
   const [page, setPage] = useState("1");
-  const { user } = useUser()
 
   const pages = {
     "0": <DemographicPage changePage={setPage}/>,

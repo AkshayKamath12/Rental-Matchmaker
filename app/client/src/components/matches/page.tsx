@@ -1,15 +1,9 @@
 import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { useSession, useUser } from '@clerk/nextjs'
-import createClerkSupabaseClient from "../helpers/createClient"
 type props={
   changePage: (page: string) => void;
 }
 
 export default function MatchesPage({changePage}: props){
-    const { user } = useUser();
-	const { session } = useSession();
-    const email = user?.primaryEmailAddress?.emailAddress;
 
     return (
             <div className="flex flex-col w-[80%] mx-32 h-screen">
@@ -22,13 +16,13 @@ export default function MatchesPage({changePage}: props){
                             </div>
 
                         </header>
-                        <Card>
+                        <div id="card">
                             <div className="bg-white p-8 h-full w-full flex flex-col items-center">
                                 <header className="text-5xl mb-8"></header>
                                 
                             </div>
 
-                        </Card>
+                        </div>
                        
                         
 

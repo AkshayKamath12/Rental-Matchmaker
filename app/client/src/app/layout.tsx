@@ -26,18 +26,7 @@ export default function RootLayout({
   return (
       <html lang="en">
         <body>
-          <ClerkProvider>
-            <header className="flex justify-end bg-gray-100">
-              
-              <UserButton showName/>
-            </header>
-            <SignedOut>
-              <SignIn routing="hash"/>
-            </SignedOut>
-            <SignedIn>
             {children}
-            </SignedIn>
-          </ClerkProvider>
         </body>
       </html>
   )
