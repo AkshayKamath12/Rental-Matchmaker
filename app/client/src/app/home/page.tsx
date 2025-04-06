@@ -1,7 +1,11 @@
 
+type props = {
+  changePage: (page: string) => void;
+};
 
 
-export default function HomePage() {
+
+export default function HomePage({changePage}: props) {
 
   return (
     <div className="bg-gray-100 items-center flex flex-col h-screen w-screen">
