@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
+import { jwtVerify, decodeJwt } from 'jose';
+
+
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
@@ -18,13 +20,17 @@ async function isLoggedIn(request: NextRequest) {
     const token = request.cookies.get('jwt-token')?.value;
     if (!token) return false;
     try {
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET); 
-        await jwtVerify(token, secret);
-        return true;
-    } catch (error) {
-        console.error('JWT verification failed:', error);
+        const decodedToken = decodeJwt(token);
+        const currentTime = Math.floor(Date.now() / 1000);
+  
+        if (decodedToken.exp && decodedToken.exp > currentTime) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (error) {
         return false;
-    }
+      }
 }
 
 export const config = {
