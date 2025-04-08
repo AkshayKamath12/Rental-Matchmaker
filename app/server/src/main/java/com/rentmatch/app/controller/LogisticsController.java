@@ -94,4 +94,12 @@ public class LogisticsController {
             return null;
         }
     }
-}
+
+    @GetMapping("/username")
+    public String getUsername() {
+        String userCred = getLoggedUser();
+        if (userCred != null) {
+            User user = getLoggedUserDetails(userCred);
+            return user.getUsername();
+        }
+        return null;}}
