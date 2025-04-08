@@ -36,7 +36,7 @@ export default async function LoginPage() {
                 setCookie('jwt-token', text, { maxAge: 60 * 60 * 24 * 7 }); // Set cookie for 7 days
             });
             
-            Router.replace('/home');
+            Router.replace('/');
         })
         .catch((error) => {
             console.error('Error:', error);

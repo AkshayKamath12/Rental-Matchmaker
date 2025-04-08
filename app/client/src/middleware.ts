@@ -24,8 +24,10 @@ async function isLoggedIn(request: NextRequest) {
         const currentTime = Math.floor(Date.now() / 1000);
   
         if (decodedToken.exp && decodedToken.exp > currentTime) {
+          //console.log("here")
           return true;
         } else {
+          //console.log("failed")
           return false;
         }
       } catch (error) {

@@ -1,11 +1,33 @@
-
+"use client"
+import { useState } from "react";
 
 
 export default function HomePage() {
+  const [username, setUsername] = useState("")
+  
+    
+    const getData = async () =>{
+      fetch("http://localhost:8080/api/username", {
+        credentials:"include"
+      }).then(
+        response => {
+          if(!response.ok){
+            throw new Error("error fetching username");
+          }
+          response.text().then((usernameResponse) => {
+            setUsername(usernameResponse)
+          })
+        }
+      ).catch((error) =>{
+        console.log(error)
+      });
+    }
+    getData()
+    
 
   return (
     <div className="bg-gray-100 items-center flex flex-col h-screen w-screen">
-      <header className="text-6xl">Hello</header>
+      <header className="text-6xl">Hello {username}</header>
       <table className="w-3/4 h-1/2 my-8">
         <tbody>
           <tr className="text-center">
