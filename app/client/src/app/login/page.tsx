@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
-import { getCookie, setCookie} from 'cookies-next';
+import { setCookie} from 'cookies-next';
 
 export default async function LoginPage() {
     const Router = useRouter();
@@ -31,12 +31,11 @@ export default async function LoginPage() {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             };
-            const data = response.text().then((text) => {
+            response.text().then((text) => {
                 console.log("Response data:", text); //logging jwt token
                 setCookie('jwt-token', text, { maxAge: 60 * 60 * 24 * 7 }); // Set cookie for 7 days
-            });
-            
-            Router.replace('/');
+                Router.replace('/');
+            });        
         })
         .catch((error) => {
             console.error('Error:', error);

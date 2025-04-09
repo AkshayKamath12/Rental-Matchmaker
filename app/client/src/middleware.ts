@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { jwtVerify, decodeJwt } from 'jose';
+import { decodeJwt } from 'jose';
 
 
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isLoginPage = path === '/login';
-  const loggedIn = await isLoggedIn(request); // Replace with actual login check logic
-
+  const loggedIn = await isLoggedIn(request);
   if (!isLoginPage && !loggedIn) {
     console.log("Redirecting to login page");
     return NextResponse.redirect(new URL('/login', request.url));
@@ -24,10 +23,8 @@ async function isLoggedIn(request: NextRequest) {
         const currentTime = Math.floor(Date.now() / 1000);
   
         if (decodedToken.exp && decodedToken.exp > currentTime) {
-          //console.log("here")
           return true;
         } else {
-          //console.log("failed")
           return false;
         }
       } catch (error) {

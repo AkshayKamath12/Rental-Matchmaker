@@ -11,9 +11,6 @@ export default function HomePage() {
         credentials:"include"
       }).then(
         response => {
-          if(!response.ok){
-            throw new Error("error fetching username");
-          }
           response.text().then((usernameResponse) => {
             setUsername(usernameResponse)
           })
