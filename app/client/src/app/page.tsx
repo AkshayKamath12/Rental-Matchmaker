@@ -1,10 +1,10 @@
 "use client"
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
   const [username, setUsername] = useState("")
-  
+  const Router = useRouter();
     
     const getData = async () =>{
       fetch("http://localhost:8080/api/username", {
@@ -19,8 +19,18 @@ export default function HomePage() {
         console.log(error)
       });
     }
-    getData()
     
+    const checkProfile = async () =>{
+      fetch("http://localhost:8080/api/profile", {
+        credentials:"include"
+      }).then(response => response.json())
+      .catch(() => {
+        Router.replace("/profile")
+      });
+    }
+
+    getData()
+    checkProfile()
 
   return (
     <div className="bg-gray-100 items-center flex flex-col h-screen w-screen">
