@@ -5,14 +5,23 @@ import { decodeJwt } from 'jose';
 
 
 export async function middleware(request: NextRequest) {
+  const res = await checkAuth(request);
+  if(res != null && !res){
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  return NextResponse.next()
+}
+
+async function checkAuth(request: NextRequest){
   const path = request.nextUrl.pathname;
   const isLoginPage = path === '/login';
   const loggedIn = await isLoggedIn(request);
   if (!isLoginPage && !loggedIn) {
     console.log("Redirecting to login page");
-    return NextResponse.redirect(new URL('/login', request.url));
+    return false;
   }
-  return NextResponse.next();
+  return true;
 }
 
 async function isLoggedIn(request: NextRequest) {
@@ -31,6 +40,7 @@ async function isLoggedIn(request: NextRequest) {
         return false;
       }
 }
+
 
 export const config = {
   matcher: ['/((?!_next|static).*)'],
