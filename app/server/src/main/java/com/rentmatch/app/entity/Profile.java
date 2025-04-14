@@ -11,15 +11,15 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String username;
-    private String city;
-    private String state;
+    private double longitude;
+    private double latitude;
 
     public Profile() {}
 
-    public Profile(String username, String city, String state) {
+    public Profile(String username, double longitude, double latitude) {
         this.username = username;
-        this.city = city;
-        this.state = state;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
 

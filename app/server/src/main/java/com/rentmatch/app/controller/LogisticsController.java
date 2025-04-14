@@ -75,13 +75,11 @@ public class LogisticsController {
                 String email = user.getEmail();
                 Profile profileFound = getLoggedProfile(email);
                 if(profileFound != null){
-                    profileFound.setCity(profile.getCity());
-                    profileFound.setState(profile.getState());
+                    profileFound.setLongitude(profile.getLongitude());
+                    profileFound.setLatitude(profile.getLatitude());
                     profileRepository.save(profileFound);
                 } else {
-                    profileRepository.save(new Profile(email, profile.getCity(), profile.getState()));
-                }
-            }
+                    profileRepository.save(new Profile(email, profile.getLongitude(), profile.getLatitude()));}}
         }
     }
 

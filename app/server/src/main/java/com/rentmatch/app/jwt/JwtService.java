@@ -64,6 +64,7 @@ public class JwtService extends OncePerRequestFilter {
                 }
             }
         }
+        System.out.println("No cookie found");
         return null;
     }
 }
