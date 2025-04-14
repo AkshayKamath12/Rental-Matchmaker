@@ -2,24 +2,49 @@
 
 import Autocomplete from "react-google-autocomplete";
 import { useState, } from 'react';
+import { useRouter } from "next/navigation";
 
+type Location = {
+    geometry: {
+        location: {
+            lat: () => number;
+            lng: () => number;
+        };
+    };
+}
 
 export default function DemographicPage() {
-    const [location, setLocation] = useState<any>();
-
+    const [location, setLocation] = useState<Location>();
+    const router = useRouter();
     const onSubmit = () => {
-        
+        if(!location) {
+            console.error("Location is not set")
+            return;
+        }
         const latitude = location.geometry.location.lat()
         const longitude = location.geometry.location.lng()
-
-        const insertData = async () => {
-            
-        };
-        insertData()
-
+        console.log(latitude, longitude)
 
         const insertSubmit = async () => {
-        
+            fetch("http://localhost:8080/api/profile", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "latitude": latitude,
+                    "longitude": longitude
+                })
+            }).then((response)=>{
+                if(!response.ok){
+                    console.log("error: ", response);
+                }
+                console.log("made request")
+                router.replace('/');
+            }).catch((err)=>{
+                console.log(err);
+            });
         };
         insertSubmit()
     };
