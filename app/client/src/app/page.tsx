@@ -1,40 +1,41 @@
 "use client"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 export default function HomePage() {
   const [username, setUsername] = useState("")
   const Router = useRouter();
     
-  const getData = async () =>{
-    fetch("http://localhost:8080/api/username", {
+  const getUsername = async () =>{
+    return fetch("http://localhost:8080/api/username", {
       credentials:"include"
-    }).then(
-      response => {
-        response.text().then((usernameResponse) => {
-          setUsername(usernameResponse)
-        })
-      }
-    ).catch((error) =>{
-      console.log(error)
-    });
+    }).then(response => response.text());
+        
   }
     
-  const checkProfile = async () =>{
-    fetch("http://localhost:8080/api/profile", {
+  const getProfile = async () =>{
+    return fetch("http://localhost:8080/api/profile", {
       credentials:"include"
     }).then(response => response.json())
-    .catch(() => {
-      Router.replace("/profile")
-    });
   }
 
-  getData()
-  checkProfile()
+  const { data: profileData, error: profileError } = useQuery({queryKey: ['profile'], queryFn: getProfile});
+  if(profileData){
+    console.log(profileData);
+  }else if(profileError){
+    console.log("profile error");
+  }
+
+  
+  const { data: usernameData } = useQuery({queryKey: ['username'], queryFn: getUsername});
+
+  
+
 
   return (
     <div className="bg-gray-100 items-center flex flex-col h-screen w-screen">
-      <header className="text-6xl">Hello {username}</header>
+      <header className="text-6xl">Hello {usernameData}</header>
       <table className="w-3/4 h-1/2 my-8">
         <tbody>
           <tr className="text-center">
