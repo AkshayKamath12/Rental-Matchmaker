@@ -1,6 +1,7 @@
 "use client"
-import { useState, ChangeEvent } from "react"
+import { useState, ChangeEvent, useEffect } from "react"
 import { QUESTIONS } from "./questions";
+import { useQuery } from "@tanstack/react-query";
 
 type Question = {
     questionNumber: number,
@@ -8,7 +9,7 @@ type Question = {
     weightage: number
 }
 
-export default async function FormPage(){	
+export default function FormPage(){	
     const [questionNumber, setQuestionNumber] = useState<number>(0);
     const [optionSelected, setOptionSelected] = useState<number>(0);
     
@@ -42,17 +43,9 @@ export default async function FormPage(){
     }
 
     async function getQuestionsData(){
-        fetch("http://localhost:8080/api/answers", {
+        return fetch("http://localhost:8080/api/answers", {
             credentials: "include"
-        }).then((res)=>{
-            if(!res.ok){
-                console.log("failed to get questions data: ", res.status);
-                return;
-            }
-            res.json().then((jsonArray)=>{
-                console.log(jsonArray)
-            })
-        }).catch((error) => console.log(error))
+        }).then(res => res.json())
     }
 
     async function handleSubmit(){
@@ -60,7 +53,26 @@ export default async function FormPage(){
 
     }
     
-    getQuestionsData();
+    const {data, error, isLoading} = useQuery({queryKey: ['getQuestions'], queryFn: getQuestionsData});
+
+    useEffect(()=>{
+        if(data){
+            console.log(data);
+            
+            setQuestionsData((prev) => {
+                let newQuestions = [...prev];
+                for(const answer of data){
+                    const index = answer.question;
+                    newQuestions[index].questionNumber = index;
+                    newQuestions[index].optionSelected = answer.answer;
+                    newQuestions[index].weightage = answer.weight;
+                }
+                console.log(newQuestions);
+                return newQuestions;
+            });
+            
+        }
+    }, [data])
 
     return (
             <div className="flex flex-col w-[80%] mx-32 h-screen">
