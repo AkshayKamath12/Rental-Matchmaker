@@ -2,6 +2,7 @@
 import { useState, ChangeEvent, useEffect } from "react"
 import { QUESTIONS } from "./questions";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 type Question = {
     questionNumber: number,
@@ -10,11 +11,15 @@ type Question = {
 }
 
 export default function FormPage(){	
+    const router = useRouter();
     const [questionNumber, setQuestionNumber] = useState<number>(0);
-    const [optionSelected, setOptionSelected] = useState<number>(0);
-    
+    const [currentQuestionChanged, setCurrentQuestionChanged] = useState(false);
+
     const [questionsData, setQuestionsData] = useState<Question[]>(Array.from({ length: QUESTIONS.length }, (_, i) => ({questionNumber: i, optionSelected: -1, weightage: 50})));
 
+    function handleExit(){
+        router.replace("/");
+    }
 
     function handleOptionSelect(optionSelected: number){
         setQuestionsData(
@@ -22,6 +27,7 @@ export default function FormPage(){
                 questionData.questionNumber === questionNumber ? {...questionData, optionSelected: optionSelected} : questionData
             )
         );
+        setCurrentQuestionChanged(true);
     }
 
     function handleWeightageChange(event:ChangeEvent<HTMLInputElement>){
@@ -31,15 +37,43 @@ export default function FormPage(){
                 questionData.questionNumber === questionNumber ? {...questionData, weightage: weightage} : questionData
             )
         );
+        setCurrentQuestionChanged(true);
     }
 
     function handleNext(){
+        console.log(currentQuestionChanged);
+        if(currentQuestionChanged){
+            saveQuestion();
+        }
         setQuestionNumber((prevState) => prevState + 1);
-        
     }
 
     function handlePrev(){
+        if(currentQuestionChanged){
+            saveQuestion();
+        }
         setQuestionNumber((prevState) => prevState - 1);
+    }
+
+    async function saveQuestion(){
+        const optionSelected = questionsData[questionNumber].optionSelected
+        const weight = questionsData[questionNumber].weightage
+        fetch("http://localhost:8080/api/answers", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                question: questionNumber,
+                answer: optionSelected,
+                weight: weight
+            })
+            }).catch((error)=>{
+                console.log(error);
+            }
+        )
+        setCurrentQuestionChanged(false);
     }
 
     async function getQuestionsData(){
@@ -53,7 +87,7 @@ export default function FormPage(){
 
     }
     
-    const {data, error, isLoading} = useQuery({queryKey: ['getQuestions'], queryFn: getQuestionsData});
+    const {data} = useQuery({queryKey: ['getQuestions'], queryFn: getQuestionsData});
 
     useEffect(()=>{
         if(data){
@@ -69,8 +103,7 @@ export default function FormPage(){
                 }
                 console.log(newQuestions);
                 return newQuestions;
-            });
-            
+            });            
         }
     }, [data])
 
@@ -80,7 +113,7 @@ export default function FormPage(){
                     <main className="flex-1 p-6 w-full overflow-auto">
                         <header className="flex justify-between items-center mb-4">
                             <div className="flex flex-col items-center space-x-4">
-                                <button onClick={()=>{}}>{"<--- Back"}
+                                <button onClick={handleExit}>{"<--- Back"}
                                 </button>
                             </div>
 
@@ -89,7 +122,7 @@ export default function FormPage(){
                             <div className="bg-white p-8 h-full w-full flex flex-col items-center">
                                 <header className="text-5xl mb-8">{QUESTIONS[questionNumber].question}</header>
                                 {QUESTIONS[questionNumber].options.map((option, key)=>{
-                                    let className = optionSelected == key ? "w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ring-4 outline-none ring-cyan-300 dark:ring-cyan-800" : "w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                                    let className = questionsData[questionNumber].optionSelected == key ? "w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ring-4 outline-none ring-cyan-300 dark:ring-cyan-800" : "w-3/4 mb-8 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
                                     return <button key={key} onClick={()=>handleOptionSelect(key)} className={className}>{option}</button>;
                                 })}
                                 <p className="mt-8">How much does this matter to you on a scale of 0-100?</p>
