@@ -18,6 +18,7 @@ export default function FormPage(){
     const [questionsData, setQuestionsData] = useState<Question[]>(Array.from({ length: QUESTIONS.length }, (_, i) => ({questionNumber: i, optionSelected: -1, weightage: 50})));
 
     function handleExit(){
+        saveQuestion()
         router.replace("/");
     }
 
@@ -42,38 +43,37 @@ export default function FormPage(){
 
     function handleNext(){
         console.log(currentQuestionChanged);
-        if(currentQuestionChanged){
-            saveQuestion();
-        }
+        saveQuestion();
+    
         setQuestionNumber((prevState) => prevState + 1);
     }
 
     function handlePrev(){
-        if(currentQuestionChanged){
-            saveQuestion();
-        }
+        saveQuestion();
         setQuestionNumber((prevState) => prevState - 1);
     }
 
     async function saveQuestion(){
-        const optionSelected = questionsData[questionNumber].optionSelected
-        const weight = questionsData[questionNumber].weightage
-        fetch("http://localhost:8080/api/answers", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                question: questionNumber,
-                answer: optionSelected,
-                weight: weight
-            })
-            }).catch((error)=>{
-                console.log(error);
-            }
-        )
-        setCurrentQuestionChanged(false);
+        if(currentQuestionChanged){
+            const optionSelected = questionsData[questionNumber].optionSelected
+            const weight = questionsData[questionNumber].weightage
+            fetch("http://localhost:8080/api/answers", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    question: questionNumber,
+                    answer: optionSelected,
+                    weight: weight
+                })
+                }).catch((error)=>{
+                    console.log(error);
+                }
+            )
+            setCurrentQuestionChanged(false);
+        }
     }
 
     async function getQuestionsData(){
