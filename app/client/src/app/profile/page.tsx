@@ -40,7 +40,7 @@ export default function DemographicPage() {
                 if(!response.ok){
                     console.log("error: ", response);
                 }
-                console.log("made request")
+                console.log(response)
                 router.replace('/');
             }).catch((err)=>{
                 console.log(err);

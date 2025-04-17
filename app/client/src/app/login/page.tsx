@@ -40,10 +40,31 @@ export default function LoginPage() {
         const result = await refetch()
         if (result.isSuccess) {
             setCookie('jwt-token', result.data, { maxAge: 60 * 60 * 24 * 7 }); // Set cookie for 7 days
+            getProfile().then((res)=>{
+              const fetchProfile = async () => {
+                try {
+                  await res.json();
+                  Router.replace("/")
+                } catch (error) {
+                  console.log("profile not set");
+                  Router.replace("/profile");
+                }
+              };
+              fetchProfile();
+            });
+
             Router.replace('/');
         } else {
           console.error('Login failed')
         }
+      }
+
+      
+
+      const getProfile = async () =>{
+        return fetch("http://localhost:8080/api/profile", {
+          credentials:"include"
+        })
       }
 
 
