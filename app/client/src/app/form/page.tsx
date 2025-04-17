@@ -53,6 +53,21 @@ export default function FormPage(){
         setQuestionNumber((prevState) => prevState - 1);
     }
 
+    function checkReadySubmit(){
+        if(questionNumber == QUESTIONS.length -1){
+            for(const question of questionsData){
+                if(question.optionSelected == -1){
+                    return false;
+                }
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
+
+
+
     async function saveQuestion(){
         if(currentQuestionChanged){
             const optionSelected = questionsData[questionNumber].optionSelected
@@ -82,9 +97,14 @@ export default function FormPage(){
         }).then(res => res.json())
     }
 
-    async function handleSubmit(){
-        
-
+     function handleSubmit(){
+        const submitData = async () =>{
+            return fetch("http://localhost:8080/api/submit", {
+                method: "POST",
+                credentials: "include"
+            }).then(()=>console.log("submitted"));
+        }
+        submitData().then(()=>{router.replace("/")})
     }
     
     const {data} = useQuery({queryKey: ['getQuestions'], queryFn: getQuestionsData});
@@ -143,9 +163,9 @@ export default function FormPage(){
                                 <button disabled={questionNumber === QUESTIONS.length - 1} onClick={handleNext}>Next</button>
                             </div>
                             <div className="w-full flex justify-center mt-8">
-                                <button onClick={handleSubmit}>
+                                {checkReadySubmit() && <button onClick={handleSubmit}>
                                     SUBMIT
-                                </button>
+                                </button>}
                                 
                             </div>
                         </div>
