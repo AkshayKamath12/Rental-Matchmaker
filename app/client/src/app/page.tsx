@@ -1,10 +1,9 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 export default function HomePage() {
-  const [username, setUsername] = useState("")
   const Router = useRouter();
     
   const getUsername = async () =>{
@@ -17,15 +16,25 @@ export default function HomePage() {
   const getProfile = async () =>{
     return fetch("http://localhost:8080/api/profile", {
       credentials:"include"
-    }).then(response => response.json())
+    })
   }
 
   const { data: profileData, error: profileError } = useQuery({queryKey: ['profile'], queryFn: getProfile});
-  if(profileData){
-    console.log(profileData);
-  }else if(profileError){
-    console.log("profile error");
-  }
+
+  useEffect(() => {
+    if (profileData) {
+      const fetchProfile = async () => {
+        try {
+          await profileData.json();
+        } catch (error) {
+          console.log("profile not set");
+          Router.replace("/profile")
+        }
+      };
+  
+      fetchProfile();
+    }
+  }, [profileData]);
 
   
   const { data: usernameData } = useQuery({queryKey: ['username'], queryFn: getUsername});

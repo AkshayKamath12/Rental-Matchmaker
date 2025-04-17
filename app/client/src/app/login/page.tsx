@@ -36,6 +36,7 @@ export default function LoginPage() {
       })
     
     const handleLogin = async () => {
+      console.log("logging in");
         const result = await refetch()
         if (result.isSuccess) {
             setCookie('jwt-token', result.data, { maxAge: 60 * 60 * 24 * 7 }); // Set cookie for 7 days
