@@ -23,7 +23,6 @@ export default function DemographicPage() {
         }
         const latitude = location.geometry.location.lat()
         const longitude = location.geometry.location.lng()
-        console.log(latitude, longitude)
 
         const insertSubmit = async () => {
             fetch("http://localhost:8080/api/profile", {
@@ -40,7 +39,6 @@ export default function DemographicPage() {
                 if(!response.ok){
                     console.log("error: ", response);
                 }
-                console.log(response)
                 router.replace('/');
             }).catch((err)=>{
                 console.log(err);

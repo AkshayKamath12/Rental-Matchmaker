@@ -98,6 +98,7 @@ export default function FormPage(){
     }
 
      function handleSubmit(){
+        saveQuestion();
         const submitData = async () =>{
             return fetch("http://localhost:8080/api/submit", {
                 method: "POST",
