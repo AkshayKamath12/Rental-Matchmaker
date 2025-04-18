@@ -9,6 +9,19 @@ export default function MatchesPage(){
         router.replace("/")
     }
 
+    const findMatches = async () => {
+        fetch("http://localhost:8080/api/matches", {
+            credentials: "include",
+        }).then((response)=>{
+            if(!response.ok){
+                console.log("error: ", response);
+            }
+            response.json().then(data => console.log(data));
+        }).catch((err)=>{
+            console.log(err);
+        });
+    };
+
     return (
             <div className="flex flex-col w-[80%] mx-32 h-screen">
                 <div className="flex">
@@ -21,9 +34,9 @@ export default function MatchesPage(){
                         </header>
                         <div id="card">
                             <div className="bg-white p-8 h-full w-full flex flex-col items-center">
-                                <header className="text-5xl mb-8"></header>
-                                
+                                <header className="text-5xl mb-8">Matches</header>
                             </div>
+                            <button onClick={findMatches} className="bg-blue-300 p-5 rounded-lg">Generate Matches</button>
 
                         </div>
                        
