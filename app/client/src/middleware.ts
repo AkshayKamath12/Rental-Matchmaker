@@ -6,8 +6,14 @@ import { decodeJwt } from 'jose';
 
 export async function middleware(request: NextRequest) {
   const res = await checkAuth(request);
-  if(res != null && !res){
-    return NextResponse.redirect(new URL('/login', request.url))
+  if(res != null){
+    if(!res){
+      return NextResponse.redirect(new URL('/login', request.url))
+    }else{
+      if(request.nextUrl.pathname === '/login'){
+        return NextResponse.redirect(new URL('/', request.url))
+      }
+    }
   }
 
   return NextResponse.next()
