@@ -47,7 +47,7 @@ public class MatchesService {
             Question question = userQuestions.get(i);
             Question matchUserQuestion = matchUserQuestions.get(i);
             int userAnswer = question.getAnswer();
-            double userWeight = question.getWeight() / 100;
+            double userWeight = ((double)question.getWeight()) / 100;
             int matchUserAnswer = matchUserQuestion.getAnswer();
             double diffOption = Math.abs(userAnswer - matchUserAnswer);
             runningScore += (10 - (diffOption) * userWeight);
