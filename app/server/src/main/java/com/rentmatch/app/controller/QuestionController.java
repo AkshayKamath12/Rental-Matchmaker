@@ -5,9 +5,12 @@ import com.rentmatch.app.dao.UserRepository;
 import com.rentmatch.app.entity.Question;
 import com.rentmatch.app.entity.User;
 import com.rentmatch.app.service.QuestionService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,12 +49,12 @@ public class QuestionController {
         if (loggedUser != null) {
             return questionService.findQuestion(loggedUser, questionNum);
         }else {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "question not answered");
         }
     }
 
     @PostMapping("/answers")
-    public void setQuestion(@RequestBody Question question) {
+    public ResponseEntity<String> setQuestion(@RequestBody Question question) {
         String loggedUser = getLoggedUser();
         if (loggedUser != null) {
             Question dbQuestion = questionService.findQuestion(loggedUser, question.getQuestion());
@@ -61,9 +64,10 @@ public class QuestionController {
             } else {
                 dbQuestion = new Question(question.getQuestion(), question.getAnswer(), question.getWeight(), loggedUser);
             }
-
             questionService.saveQuestion(dbQuestion);
+            return ResponseEntity.ok("Question updated");
         }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 
 

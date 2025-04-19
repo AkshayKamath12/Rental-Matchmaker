@@ -6,9 +6,12 @@ import com.rentmatch.app.dao.UserRepository;
 import com.rentmatch.app.entity.Profile;
 import com.rentmatch.app.entity.SubmittedUser;
 import com.rentmatch.app.entity.User;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -52,7 +55,7 @@ public class LogisticsController {
     }
 
     @PostMapping("/submit")
-    public void submit() {
+    public ResponseEntity<String> submit() {
         String loggedUser = getLoggedUser();
         if (loggedUser != null) {
             User user = getLoggedUserDetails(loggedUser);
@@ -61,13 +64,17 @@ public class LogisticsController {
                 String email = user.getEmail();
                 if (!submittedUserRepository.existsByUsername(username) && ! submittedUserRepository.existsByUsername(email)) {
                     submittedUserRepository.save(new SubmittedUser(email));
+                    return ResponseEntity.ok("Submitted");
                 }
+                return ResponseEntity.ok("User already submitted");
             }
+            return new ResponseEntity<>("error occured in server",HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>("couldn't find logged in user",HttpStatus.FORBIDDEN);
     }
 
     @PostMapping("/profile")
-    public void profile(@RequestBody Profile profile) {
+    public ResponseEntity<String> profile(@RequestBody Profile profile) {
         String loggedUser = getLoggedUser();
         if (loggedUser != null) {
             User user = getLoggedUserDetails(loggedUser);
@@ -78,9 +85,15 @@ public class LogisticsController {
                     profileFound.setLongitude(profile.getLongitude());
                     profileFound.setLatitude(profile.getLatitude());
                     profileRepository.save(profileFound);
+                    return ResponseEntity.ok("Profile updated");
                 } else {
-                    profileRepository.save(new Profile(email, profile.getLongitude(), profile.getLatitude()));}}
+                    profileRepository.save(new Profile(email, profile.getLongitude(), profile.getLatitude()));
+                    return ResponseEntity.ok("Profile created");
+                }
+            }
+            return new ResponseEntity<>("error occured in server",HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>("couldn't find logged in user",HttpStatus.FORBIDDEN);
     }
 
     @GetMapping("/profile")
@@ -89,7 +102,7 @@ public class LogisticsController {
         if (username != null) {
             return getLoggedProfile(username);
         }else {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found");
         }
     }
 
@@ -100,4 +113,6 @@ public class LogisticsController {
             User user = getLoggedUserDetails(userCred);
             return user.getUsername();
         }
-        return null;}}
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found");
+    }
+}

@@ -50,7 +50,6 @@ public class MatchesController {
             array2.add(result.get(u));
         }
 
-
         Response response = new Response(array1, array2);
         return ResponseEntity.ok(response);
     }
