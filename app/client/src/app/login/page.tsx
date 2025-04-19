@@ -35,7 +35,7 @@ export default function LoginPage() {
         enabled: false, 
       })
     
-    const handleLogin = async () => {
+    async function handleLogin(){
       console.log("logging in");
         const result = await refetch()
         if (result.isSuccess) {
@@ -52,7 +52,7 @@ export default function LoginPage() {
               };
               fetchProfile();
             });
-
+            
             Router.replace('/');
         } else {
           console.error('Login failed')

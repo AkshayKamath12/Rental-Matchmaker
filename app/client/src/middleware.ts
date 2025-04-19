@@ -37,6 +37,7 @@ async function isLoggedIn(request: NextRequest) {
           return false;
         }
       } catch (error) {
+        console.error("Error decoding JWT:", error);
         return false;
       }
 }

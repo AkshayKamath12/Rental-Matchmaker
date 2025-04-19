@@ -15,8 +15,11 @@ export default function HomePage() {
   }
 
   
-  const { data: usernameData } = useQuery({queryKey: ['username'], queryFn: getUsername});
+  const { data: usernameData, isError:isUsernameError } = useQuery({queryKey: ['username'], queryFn: getUsername});
 
+  if(isUsernameError){
+    Router.push("/login");
+  }
   
 
 

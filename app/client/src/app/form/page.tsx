@@ -108,7 +108,11 @@ export default function FormPage(){
         submitData().then(()=>{router.replace("/")})
     }
     
-    const {data} = useQuery({queryKey: ['getQuestions'], queryFn: getQuestionsData});
+    const {data, error: getQuestionsError} = useQuery({queryKey: ['getQuestions'], queryFn: getQuestionsData});
+
+    if(getQuestionsError){
+        router.replace("/login");
+    }
 
     useEffect(()=>{
         if(data){

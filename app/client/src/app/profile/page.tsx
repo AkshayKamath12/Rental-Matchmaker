@@ -40,8 +40,8 @@ export default function DemographicPage() {
                     console.log("error: ", response);
                 }
                 router.replace('/');
-            }).catch((err)=>{
-                console.log(err);
+            }).catch(()=>{
+                router.replace("/login");
             });
         };
         insertSubmit()
