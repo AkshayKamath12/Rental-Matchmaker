@@ -1,8 +1,7 @@
 "use client"
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import queryClient from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
+import { deleteCookie} from 'cookies-next';
 
 export default function HomePage() {
   const Router = useRouter();
@@ -21,11 +20,21 @@ export default function HomePage() {
     Router.push("/login");
   }
   
+  const handleLogout = async () => {
+    deleteCookie("jwt-token");
+    Router.push("/login");
+  }
 
 
   return (
     <div className="bg-gray-100 items-center flex flex-col h-screen w-screen">
-      <header className="text-6xl">Hello {usernameData}</header>
+      <div className="flex w-full justify-center p-5">
+        <h3 className="text-6xl">
+          Hello {usernameData}
+        </h3>
+        <button onClick={handleLogout} className="absolute right-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md">Log Out</button>
+
+      </div>
       <table className="w-3/4 h-1/2 my-8">
         <tbody>
           <tr className="text-center">

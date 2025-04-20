@@ -6,24 +6,29 @@ import { decodeJwt } from 'jose';
 
 export async function middleware(request: NextRequest) {
   const res = await checkAuth(request);
-  if(res != null){
-    if(!res){
-      return NextResponse.redirect(new URL('/login', request.url))
-    }else{
-      if(request.nextUrl.pathname === '/login'){
-        return NextResponse.redirect(new URL('/', request.url))
+  console.log("Middleware executed for path:", request.nextUrl.pathname);
+  if (res != null) {
+    if (!res) {
+      // User is not logged in, redirect to login
+      if (request.nextUrl.pathname !== '/login') {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+    } else if (res === true) {
+      // User is logged in, prevent access to /login
+      if (request.nextUrl.pathname === '/login') {
+        return NextResponse.redirect(new URL('/', request.url));
       }
     }
   }
 
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
 async function checkAuth(request: NextRequest){
   const path = request.nextUrl.pathname;
-  const isLoginPage = path === '/login';
   const loggedIn = await isLoggedIn(request);
-  if (!isLoginPage && !loggedIn) {
+  console.log(loggedIn)
+  if (!loggedIn) {
     console.log("Redirecting to login page");
     return false;
   }
