@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,10 +37,9 @@ public class MatchesController {
         return null;
     }
 
-    @GetMapping("/matches")
-    public ResponseEntity<Response> matches() {
-        User user = getLoggedUser();
-        Hashtable<User, Double> result= matchesService.findMatches(user);
+    @GetMapping("/matches/{range}")
+    public ResponseEntity<Response> matches(@PathVariable int range) {
+        User user = getLoggedUser();Hashtable<User, Double> result= matchesService.findMatches(user, range);
         List<String> array1 = new ArrayList<>();
         List<Double> array2 = new ArrayList<>();
 

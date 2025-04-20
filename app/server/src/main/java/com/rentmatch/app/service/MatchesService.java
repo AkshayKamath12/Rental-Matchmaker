@@ -29,9 +29,9 @@ public class MatchesService {
         this.submittedUserRepository = submittedUserRepository;
     }
 
-    public Hashtable<User, Double> findMatches(User user){
+    public Hashtable<User, Double> findMatches(User user, int range){
         Hashtable<User, Double> matches = new Hashtable<>();
-        List<User> closeMatches = findMatchesByDistance(user, 500);
+        List<User> closeMatches = findMatchesByDistance(user, range);
         for(User u: closeMatches){
             double score = calculateMatchScore(user, u);
             matches.put(u, score);
