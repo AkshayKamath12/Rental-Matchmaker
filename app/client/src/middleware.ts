@@ -9,9 +9,10 @@ export async function middleware(request: NextRequest) {
   console.log("Middleware executed for path:", request.nextUrl.pathname);
   if (res != null) {
     if (!res) {
-      // User is not logged in, redirect to login
-      if (request.nextUrl.pathname !== '/login') {
-        return NextResponse.redirect(new URL('/login', request.url));
+      if (request.nextUrl.pathname == '/register') {
+        return NextResponse.next();
+      }else if (request.nextUrl.pathname !== '/login') {
+        return NextResponse.next();
       }
     } else if (res === true) {
       // User is logged in, prevent access to /login
@@ -25,11 +26,9 @@ export async function middleware(request: NextRequest) {
 }
 
 async function checkAuth(request: NextRequest){
-  const path = request.nextUrl.pathname;
   const loggedIn = await isLoggedIn(request);
-  console.log(loggedIn)
   if (!loggedIn) {
-    console.log("Redirecting to login page");
+    console.log("Not logged in");
     return false;
   }
   return true;

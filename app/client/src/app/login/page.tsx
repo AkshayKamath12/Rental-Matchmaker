@@ -59,6 +59,10 @@ export default function LoginPage() {
         }
       }
 
+      async function handleRegister(){
+        Router.replace("/register");
+      }
+
       
 
       const getProfile = async () =>{
@@ -74,8 +78,8 @@ export default function LoginPage() {
         <div className="flex flex-col items-center space-x-4">
             <input type="text" placeholder="Username or Email" ref={usernameRef} className="border-2 border-gray-300 rounded-md p-2 mb-4" />
             <input type="password" placeholder="Password" ref={passwordRef} className="border-2 border-gray-300 rounded-md p-2 mb-4" />
-            <button className="bg-blue-500 text-white rounded-md p-2" onClick={handleLogin}>Login</button>
-            <button className="bg-blue-500 text-white rounded-md p-2 mt-4">Register</button>
+            <button onClick={handleLogin} className="bg-blue-500 text-white rounded-md p-2">Login</button>
+            <button onClick = {handleRegister} className="bg-blue-500 text-white rounded-md p-2 mt-4">Register</button>
         </div>
       </div>
     )
