@@ -96,7 +96,7 @@ export default function MatchesPage() {
                 } hover:bg-blue-100`}
               >
                 <td className="py-3 px-4">{match}</td>
-                <td className="py-3 px-4">{matches.scores[index]}</td>
+                <td className="py-3 px-4">{matches.scores[index].toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
