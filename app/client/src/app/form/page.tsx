@@ -140,7 +140,7 @@ export default function FormPage() {
   }, [data]);
 
   return (
-    <div className="flex flex-col w-[80%] mx-auto h-screen bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-6 rounded-lg shadow-lg">
+    <div className="flex flex-col w-full mx-auto h-screen bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-6 rounded-lg shadow-lg">
       <header className="flex justify-between items-center mb-6">
         <button
           onClick={handleExit}

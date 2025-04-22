@@ -51,6 +51,13 @@ export default function DemographicPage() {
   };
 
   return (
+    <div className="w-screen bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
+    <button
+          onClick={()=>{router.replace("/")}}
+          className="text-lg text-blue-600 hover:text-blue-800 font-semibold mt-3 mx-3"
+        >
+          {"<--- Back"}
+        </button>
     <div className="flex flex-col items-center justify-center h-screen w-screen bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
       <header className="text-4xl font-bold text-purple-700 mb-8">
@@ -91,6 +98,7 @@ export default function DemographicPage() {
       <footer className="mt-8 text-gray-500 text-sm">
         Rental Matchmaker © 2025
       </footer>
+    </div>
     </div>
   );
 }
