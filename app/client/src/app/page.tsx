@@ -26,6 +26,10 @@ export default function HomePage() {
     Router.push("/login");
   };
 
+  const handleEditProfile = () => {
+    Router.push("/profile");
+  }
+
   return (
     <div className="flex flex-col items-center h-screen w-screen bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
       {/* Header Section */}
@@ -69,6 +73,8 @@ export default function HomePage() {
             </tr>
           </tbody>
         </table>
+        <button onClick={handleEditProfile} type="button" className="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Edit Profile</button>
+
       </div>
 
       {/* Footer Section */}

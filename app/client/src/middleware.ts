@@ -6,7 +6,7 @@ import { decodeJwt } from 'jose';
 
 export async function middleware(request: NextRequest) {
   const res = await checkAuth(request);
-  console.log("Middleware executed for path:", request.nextUrl.pathname);
+  //console.log("Middleware executed for path:", request.nextUrl.pathname);
   if (res != null) {
     if (!res) {
       if (request.nextUrl.pathname == '/register') {
