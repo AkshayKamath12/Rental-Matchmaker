@@ -12,6 +12,8 @@ export async function middleware(request: NextRequest) {
       if (request.nextUrl.pathname == '/register') {
         return NextResponse.next();
       }else if (request.nextUrl.pathname !== '/login') {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }else {
         return NextResponse.next();
       }
     } else if (res === true) {
@@ -28,7 +30,6 @@ export async function middleware(request: NextRequest) {
 async function checkAuth(request: NextRequest){
   const loggedIn = await isLoggedIn(request);
   if (!loggedIn) {
-    console.log("Not logged in");
     return false;
   }
   return true;
