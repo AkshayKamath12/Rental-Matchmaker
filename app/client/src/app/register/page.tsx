@@ -35,6 +35,10 @@ export default function RegisterPage() {
     });
   }
 
+  function returnToLogin(){
+    Router.replace("/login");
+  }
+
   return (
     <div className="flex flex-col w-screen h-screen items-center justify-center bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
@@ -80,6 +84,9 @@ export default function RegisterPage() {
           className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-2 px-4 rounded-md shadow-md hover:shadow-lg hover:from-blue-600 hover:to-purple-600"
         >
           Create Account
+        </button>
+        <button className="mt-2 font-semibold" onClick={returnToLogin}>
+          Return to login
         </button>
       </div>
 
