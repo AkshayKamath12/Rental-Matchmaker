@@ -153,7 +153,7 @@ export default function FormPage() {
         </h1>
       </header>
 
-      <div className="bg-white p-8 rounded-lg shadow-md flex flex-col items-center">
+      <div className="bg-white w-[75%] ml-[12.5%] p-8 rounded-lg shadow-md flex flex-col items-center">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">
           {QUESTIONS[questionNumber].question}
         </h2>
@@ -189,18 +189,18 @@ export default function FormPage() {
         </p>
       </div>
 
-      <div className="flex justify-between mt-6">
+      <div className="flex justify-between mt-6 ">
         <button
           disabled={questionNumber === 0}
           onClick={handlePrev}
-          className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 disabled:bg-gray-300"
+          className="bg-blue-500 ml-[12.5%] text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 disabled:bg-gray-300"
         >
           Previous
         </button>
         <button
           disabled={questionNumber === QUESTIONS.length - 1}
           onClick={handleNext}
-          className="bg-purple-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-purple-600 disabled:bg-gray-300"
+          className="bg-purple-500 mr-[12.5%] text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-purple-600 disabled:bg-gray-300"
         >
           Next
         </button>
