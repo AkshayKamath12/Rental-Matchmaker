@@ -20,7 +20,7 @@ public class MatchesService {
 
     private static final double EARTH_RADIUS_MILES = 3958.8; // Earth radius in miles
     private static final double maxMatchRunningScore = 20;
-
+    private static int[] optionsPerQuestion = {4, 2};
 
     public MatchesService(QuestionService questionService, UserRepository userRepository, ProfileRepository profileRepository, SubmittedUserRepository submittedUserRepository) {
         this.questionService = questionService;
@@ -43,16 +43,20 @@ public class MatchesService {
         List<Question> userQuestions = questionService.findAll(user1.getUsername());
         List<Question> matchUserQuestions = questionService.findAll(user2.getUsername());
         double runningScore = 0;
+        double runningScoreMatch = 0;
         for(int i = 0; i < userQuestions.size(); i++){
             Question question = userQuestions.get(i);
             Question matchUserQuestion = matchUserQuestions.get(i);
             int userAnswer = question.getAnswer();
-            double userWeight = ((double)question.getWeight()) / 100;
+            double userWeight = question.getWeight() / 100.0;
+            double matchUserWeight = matchUserQuestion.getWeight() / 100.0;
             int matchUserAnswer = matchUserQuestion.getAnswer();
             double diffOption = Math.abs(userAnswer - matchUserAnswer);
-            runningScore += (10 - (diffOption) * userWeight);
+            double percentageDiff = diffOption / optionsPerQuestion[i];
+            runningScore += (10 - (percentageDiff * 10) * userWeight);
+            runningScoreMatch += (10 - (percentageDiff * 10) * matchUserWeight);
         }
-        return runningScore / maxMatchRunningScore * 100;
+        return ((runningScore + runningScoreMatch) / 2) / maxMatchRunningScore * 100;
     }
 
     private List<User> findMatchesByDistance(User user, double distance) {
