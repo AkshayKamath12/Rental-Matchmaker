@@ -100,7 +100,7 @@ export default function LoginPage() {
           Register
         </button>
         {
-          error && <div>
+          error && <div className="mt-4">
             <p className="text-xl text-red-600 bold">Login failed</p>
           </div>
         }
