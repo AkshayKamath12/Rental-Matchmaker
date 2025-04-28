@@ -2,16 +2,17 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { setCookie } from "cookies-next";
-import { useQuery } from "@tanstack/react-query";
 
 export default function LoginPage() {
   const Router = useRouter();
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState(false);
 
   const getJWT = async () => {
     const userRefCurrent = usernameRef.current;
     const passwordRefCurrent = passwordRef.current;
+    
     return fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
       headers: {
@@ -21,20 +22,20 @@ export default function LoginPage() {
         usernameOrEmail: userRefCurrent!.value,
         password: passwordRefCurrent!.value,
       }),
-    }).then((res) => res.text());
+    }).then((res) => {
+      if(!res.ok){
+        setError(true);
+      }
+      return res.text();
+    });
   };
 
-  const { refetch, error } = useQuery({
-    queryKey: ["login"],
-    queryFn: getJWT,
-    enabled: false,
-  });
 
   async function handleLogin() {
     console.log("logging in");
-    const result = await refetch();
-    if (result.isSuccess) {
-      setCookie("jwt-token", result.data, { maxAge: 60 * 60 }); 
+    const result = await getJWT();
+    if (result) {
+      setCookie("jwt-token", result, { maxAge: 60 * 60 }); 
       getProfile().then((res) => {
         const fetchProfile = async () => {
           try {
@@ -98,6 +99,11 @@ export default function LoginPage() {
         >
           Register
         </button>
+        {
+          error && <div>
+            <p className="text-xl text-red-600 bold">Login failed</p>
+          </div>
+        }
       </div>
 
       {/* Footer */}
