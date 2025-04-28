@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 type matches = {
@@ -10,6 +10,7 @@ type matches = {
 
 export default function MatchesPage() {
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [range, setRange] = useState<number>(25);
   const [matches, setMatches] = useState<matches>({ matches: [], scores: [] });
   console.log(matches.matches);
@@ -20,6 +21,17 @@ export default function MatchesPage() {
 
   function handleRangeChange(event: ChangeEvent<HTMLInputElement>) {
     setRange(parseInt(event.target.value));
+  }
+
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>){
+    const value = parseFloat(event.target.value);
+    if(value < 1){
+      setRange(1);
+    }else if (value > 1000){
+      setRange(1000);
+    }else{
+      setRange(value);
+    }
   }
 
   const findMatches = async () => {
@@ -55,12 +67,12 @@ export default function MatchesPage() {
       <div className="bg-white p-8 rounded-lg shadow-md">
         <div className="text-center mb-6">
           <p className="text-lg font-medium text-gray-700">
-            Find roommates within <span className="text-blue-600">{range}</span>{" "}
+            Find roommates within <input type="number" value={range} ref={inputRef} onChange={handleInputChange} className="text-blue-600 w-[7ch] border rounded text-center"></input>
             miles
           </p>
           <input
             type="range"
-            min="5"
+            min="1"
             max="1000"
             value={range}
             onChange={handleRangeChange}
