@@ -25,6 +25,7 @@ export default function LoginPage() {
     }).then((res) => {
       if(!res.ok){
         setError(true);
+        throw new Error("Invalid credentials");
       }
       return res.text();
     });
