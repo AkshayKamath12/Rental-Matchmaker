@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { setCookie } from "cookies-next";
 import { useQuery } from "@tanstack/react-query";
 
@@ -24,7 +24,7 @@ export default function LoginPage() {
     }).then((res) => res.text());
   };
 
-  const { refetch } = useQuery({
+  const { refetch, error } = useQuery({
     queryKey: ["login"],
     queryFn: getJWT,
     enabled: false,
@@ -34,7 +34,7 @@ export default function LoginPage() {
     console.log("logging in");
     const result = await refetch();
     if (result.isSuccess) {
-      setCookie("jwt-token", result.data, { maxAge: 60 * 60 * 24 * 7 }); // Set cookie for 7 days
+      setCookie("jwt-token", result.data, { maxAge: 60 * 60 }); 
       getProfile().then((res) => {
         const fetchProfile = async () => {
           try {
