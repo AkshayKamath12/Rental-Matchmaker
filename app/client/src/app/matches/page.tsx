@@ -64,7 +64,7 @@ export default function MatchesPage() {
         <h1 className="text-4xl font-bold text-purple-700">Find Matches</h1>
       </header>
 
-      <div className="bg-white p-8 rounded-lg shadow-md">
+      <div className="bg-white p-8 rounded-lg shadow-md w-3/4 ml-[12.5%]">
         <div className="text-center mb-6">
           <p className="text-lg font-medium text-gray-700">
             Find roommates within <input type="number" value={range} ref={inputRef} onChange={handleInputChange} className="text-blue-600 w-[7ch] border rounded text-center"></input>
@@ -91,7 +91,7 @@ export default function MatchesPage() {
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8 w-3/4 ml-[12.5%]">
         <table className="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
