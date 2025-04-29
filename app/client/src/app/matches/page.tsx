@@ -108,7 +108,7 @@ export default function MatchesPage() {
                 } hover:bg-blue-100`}
               >
                 <td className="py-3 px-4">{match.username}</td>
-                <td className="py-3 px-4">{match.score.toFixed(2)}</td>
+                <td className="py-3 px-4">{match.score}</td>
               </tr>
             ))}
           </tbody>
