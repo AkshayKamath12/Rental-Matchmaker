@@ -47,6 +47,7 @@ public class MatchesController {
             User u = e.nextElement();
             matchArray.add(new MatchDTO(u.getUsername(), result.get(u)));
         }
+        matchArray.sort(Comparator.comparingDouble(MatchDTO::getScore).reversed());
         return matchArray;
     }
 }
