@@ -7,7 +7,7 @@ export default function LoginPage() {
   const Router = useRouter();
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<String | null>(null);
 
   const getJWT = async () => {
     const userRefCurrent = usernameRef.current;
@@ -24,8 +24,8 @@ export default function LoginPage() {
       }),
     }).then((res) => {
       if(!res.ok){
-        setError(true);
-        throw new Error("Invalid credentials");
+        setError("Login failed");
+        return null;
       }
       return res.text();
     });
@@ -102,7 +102,7 @@ export default function LoginPage() {
         </button>
         {
           error && <div className="mt-4">
-            <p className="text-xl text-red-600 bold">Login failed</p>
+            <p className="text-xl text-red-600 bold">{error}</p>
           </div>
         }
       </div>
