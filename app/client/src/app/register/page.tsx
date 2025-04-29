@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export default function RegisterPage() {
   const Router = useRouter();
@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<String|null>(null);
 
   async function handleRegister() {
     const userRefCurrent = usernameRef.current;
@@ -16,6 +17,22 @@ export default function RegisterPage() {
     const passwordConfirmRefCurrent = confirmPasswordRef.current;
     const emailRefCurrent = emailRef.current;
     const nameRefCurrent = nameRef.current;
+
+    const username = userRefCurrent!.value;
+    const password = passwordRefCurrent!.value;
+    var confirmPassword = passwordConfirmRefCurrent!.value;
+    var email = emailRefCurrent!.value;
+    var name = nameRefCurrent!.value;
+
+    if(username === "" || password === "" || confirmPassword === "" || email === "" || name === ""){
+      setError("missing field(s)");
+      return;
+    }
+
+    if(password !== confirmPassword){
+      setError("passwords do not match")
+    }
+    
 
     return fetch("http://localhost:8080/api/auth/register", {
       method: "POST",
@@ -88,6 +105,11 @@ export default function RegisterPage() {
         <button className="mt-2 font-semibold" onClick={returnToLogin}>
           Return to login
         </button>
+        {
+          error && <div className="mt-4">
+            <p className="text-xl text-red-600 bold">{error}</p>
+          </div>
+        }
       </div>
 
       {/* Footer */}
