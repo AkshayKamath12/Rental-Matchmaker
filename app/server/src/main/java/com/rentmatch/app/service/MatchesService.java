@@ -59,6 +59,10 @@ public class MatchesService {
         return ((runningScore + runningScoreMatch) / 2) / maxMatchRunningScore * 100;
     }
 
+    private void sortArrays(List<String> usernames, List<Double> userScores){
+
+    }
+
     private List<User> findMatchesByDistance(User user, double distance) {
         List<SubmittedUser> submittedUsers = submittedUserRepository.findAll();
         List<Profile> matches = new ArrayList<>();

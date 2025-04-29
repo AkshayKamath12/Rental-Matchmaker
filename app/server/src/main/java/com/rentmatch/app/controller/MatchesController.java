@@ -1,6 +1,7 @@
 package com.rentmatch.app.controller;
 
 import com.rentmatch.app.dao.UserRepository;
+import com.rentmatch.app.dto.MatchDTO;
 import com.rentmatch.app.entity.User;
 import com.rentmatch.app.matchesResponse.Response;
 import com.rentmatch.app.service.MatchesService;
@@ -38,19 +39,14 @@ public class MatchesController {
     }
 
     @GetMapping("/matches/{range}")
-    public ResponseEntity<Response> matches(@PathVariable int range) {
+    public List<MatchDTO> matches(@PathVariable int range) {
         User user = getLoggedUser();Hashtable<User, Double> result= matchesService.findMatches(user, range);
-        List<String> array1 = new ArrayList<>();
-        List<Double> array2 = new ArrayList<>();
-
+        List<MatchDTO> matchArray = new ArrayList<>();
         Enumeration<User> e = result.keys();
         while(e.hasMoreElements()) {
             User u = e.nextElement();
-            array1.add(u.getUsername());
-            array2.add(result.get(u));
+            matchArray.add(new MatchDTO(u.getUsername(), result.get(u)));
         }
-
-        Response response = new Response(array1, array2);
-        return ResponseEntity.ok(response);
+        return matchArray;
     }
 }
