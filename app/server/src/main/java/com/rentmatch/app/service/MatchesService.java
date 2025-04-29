@@ -34,6 +34,9 @@ public class MatchesService {
         List<User> closeMatches = findMatchesByDistance(user, range);
         for(User u: closeMatches){
             double score = calculateMatchScore(user, u);
+            score *= 100;
+            score = Math.round(score);
+            score /= 100;
             matches.put(u, score);
         }
         return matches;
