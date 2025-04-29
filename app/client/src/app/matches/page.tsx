@@ -3,17 +3,17 @@
 import { ChangeEvent, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-type matches = {
-  matches: string[];
-  scores: number[];
+type match = {
+  username: string;
+  score: number;
 };
 
 export default function MatchesPage() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [range, setRange] = useState<number>(25);
-  const [matches, setMatches] = useState<matches>({ matches: [], scores: [] });
-  console.log(matches.matches);
+  const [matches, setMatches] = useState<match[]>([]);
+  console.log(matches);
 
   function exit() {
     router.replace("/");
@@ -44,7 +44,7 @@ export default function MatchesPage() {
           console.log("error: ", response);
         }
         response.json().then((data) => {
-          setMatches({ matches: data.names, scores: data.scores });
+          setMatches(data);
         });
       })
       .catch(() => {
@@ -100,15 +100,15 @@ export default function MatchesPage() {
             </tr>
           </thead>
           <tbody>
-            {matches.matches.map((match, index) => (
+            {matches.map((match, index) => (
               <tr
                 key={index}
                 className={`${
                   index % 2 === 0 ? "bg-gray-50" : "bg-gray-100"
                 } hover:bg-blue-100`}
               >
-                <td className="py-3 px-4">{match}</td>
-                <td className="py-3 px-4">{matches.scores[index].toFixed(2)}</td>
+                <td className="py-3 px-4">{match.username}</td>
+                <td className="py-3 px-4">{match.score.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
