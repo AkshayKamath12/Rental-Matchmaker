@@ -97,6 +97,7 @@ export default function MatchesPage() {
             <tr className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
               <th className="py-3 px-4 text-left">Name</th>
               <th className="py-3 px-4 text-left">Score</th>
+              <th className="py-3 px-4 text-left">Message</th>
             </tr>
           </thead>
           <tbody>
@@ -109,6 +110,7 @@ export default function MatchesPage() {
               >
                 <td className="py-3 px-4">{match.username}</td>
                 <td className="py-3 px-4">{match.score}</td>
+                <td className=""><button className="bg-blue-500 rounded-lg p-2">Message</button></td>
               </tr>
             ))}
           </tbody>
