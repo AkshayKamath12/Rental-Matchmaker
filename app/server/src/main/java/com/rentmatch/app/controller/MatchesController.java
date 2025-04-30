@@ -45,7 +45,7 @@ public class MatchesController {
         Enumeration<User> e = result.keys();
         while(e.hasMoreElements()) {
             User u = e.nextElement();
-            matchArray.add(new MatchDTO(u.getName(), result.get(u)));
+            matchArray.add(new MatchDTO(u.getUsername(), result.get(u)));
         }
         matchArray.sort(Comparator.comparingDouble(MatchDTO::getScore).reversed());
         return matchArray;
