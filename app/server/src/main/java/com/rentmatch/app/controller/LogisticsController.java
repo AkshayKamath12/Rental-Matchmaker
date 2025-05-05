@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @RestController
@@ -26,14 +27,6 @@ public class LogisticsController {
         this.profileRepository = profileRepository;
         this.submittedUserRepository = submittedUserRepository;
         this.userRepository = userRepository;
-    }
-
-    private String getLoggedUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
-            return auth.getName();
-        }
-        return null;
     }
 
     private User getLoggedUserDetails(String loggedUser) {
@@ -55,8 +48,8 @@ public class LogisticsController {
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<String> submit() {
-        String loggedUser = getLoggedUser();
+    public ResponseEntity<String> submit(Principal principal) {
+        String loggedUser = principal.getName();
         if (loggedUser != null) {
             User user = getLoggedUserDetails(loggedUser);
             if (user != null) {
@@ -74,8 +67,8 @@ public class LogisticsController {
     }
 
     @PostMapping("/profile")
-    public ResponseEntity<String> profile(@RequestBody Profile profile) {
-        String loggedUser = getLoggedUser();
+    public ResponseEntity<String> profile(@RequestBody Profile profile, Principal principal) {
+        String loggedUser = principal.getName();
         if (loggedUser != null) {
             User user = getLoggedUserDetails(loggedUser);
             if (user != null) {
@@ -97,8 +90,8 @@ public class LogisticsController {
     }
 
     @GetMapping("/profile")
-    public Profile getProfile() {
-        String username = getLoggedUser();
+    public Profile getProfile(Principal principal) {
+        String username = principal.getName();
         if (username != null) {
             return getLoggedProfile(username);
         }else {
@@ -107,8 +100,8 @@ public class LogisticsController {
     }
 
     @GetMapping("/username")
-    public String getUsername() {
-        String userCred = getLoggedUser();
+    public String getUsername(Principal principal) {
+        String userCred = principal.getName();
         if (userCred != null) {
             User user = getLoggedUserDetails(userCred);
             return user.getUsername();
