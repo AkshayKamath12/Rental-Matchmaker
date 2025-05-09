@@ -20,7 +20,7 @@ public class MatchesService {
 
     private static final double EARTH_RADIUS_MILES = 3958.8; // Earth radius in miles
     private static final double maxMatchRunningScore = 20;
-    private static int[] optionsPerQuestion = {4, 2};
+    private static int[] optionsPerQuestion = {5, 2, 3, 2, 2, 2, 2, 2, 2};
 
     public MatchesService(QuestionService questionService, UserRepository userRepository, ProfileRepository profileRepository, SubmittedUserRepository submittedUserRepository) {
         this.questionService = questionService;
