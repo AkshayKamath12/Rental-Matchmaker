@@ -32,6 +32,12 @@ public class ChatController {
         return chatMessageRepository.findChatBetweenUsers(username, otherUser);
     }
 
+    @GetMapping("/chatOtherUsers")
+    public List<String> chatOtherUsers(Principal principal) {
+       String username = principal.getName();
+       return chatMessageRepository.findAllOtherUsers(username);
+    }
+
     @MessageMapping("/private")
     public void privateMessage(Principal principal, ChatMessageDTO msg) {
         String sender = principal.getName();

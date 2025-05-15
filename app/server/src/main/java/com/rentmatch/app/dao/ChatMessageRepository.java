@@ -13,4 +13,12 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             "(m.fromUser = :user2 AND m.toUser = :user1)" +
             "ORDER BY m.timestamp ASC")
     List<ChatMessage> findChatBetweenUsers(@Param("user1") String user1, @Param("user2") String user2);
+
+    //gets all users that converse with the user in the parameter; ensure only unique values get returned
+    @Query("SELECT DISTINCT CASE " +
+            "WHEN m.fromUser = :user THEN m.toUser " +
+            "ELSE m.fromUser END " +
+            "FROM ChatMessage m " +
+            "WHERE m.fromUser = :user OR m.toUser = :user")
+    List<String> findAllOtherUsers(@Param("user") String user);
 }
