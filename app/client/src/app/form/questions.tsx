@@ -20,6 +20,11 @@ export const QUESTIONS = [
         "options": ["Yes", "No"]
     },
     {
+        "question": "How often in a day would you use the kitchen?",
+        "options": ["Often", "A few times", "Once", "Never"]
+
+    },
+    {
         "question": "Do you have any pets?",
         "options": ["Yes", "No"]
     },
@@ -30,6 +35,10 @@ export const QUESTIONS = [
     {
         "question": "Do you drink alcohol?",
         "options": ["Yes", "No"]
+    },
+    {
+        "question": "After a bill is received, how long do you take to pay it?",
+        "options": ["Immediately", "Within a week", "Within a month", "Never"]
     },
     {
         "question": "Do you have a car?",
