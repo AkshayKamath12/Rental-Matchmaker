@@ -72,6 +72,7 @@ export default function HomePage() {
               </td>
             </tr>
             <tr className="text-center">
+              <td>
                   <button
                   onClick={() => {
                     Router.push("/chats");
@@ -80,6 +81,7 @@ export default function HomePage() {
                 >
                   Open chats
                 </button>
+              </td>
             </tr>
           </tbody>
         </table>
