@@ -1,19 +1,15 @@
 package com.rentmatch.app.controller;
 
+
 import com.rentmatch.app.dao.ChatMessageRepository;
 import com.rentmatch.app.dto.ChatMessageDTO;
 import com.rentmatch.app.entity.ChatMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Stack;
 
 @RestController
 @RequestMapping("/api/chats")
