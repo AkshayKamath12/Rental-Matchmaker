@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function ChatsPage() {
   const router = useRouter();
+  const [otherUsers, setOtherUsers] = useState<String []>([]);
 
   const getUsername = async () => {
     return fetch("http://localhost:8080/api/username", {
@@ -28,7 +29,7 @@ export default function ChatsPage() {
     })
         .then((response) => {
             response.json().then((data) => {
-                console.log(data);
+                setOtherUsers(data);
             });
         })
   }
