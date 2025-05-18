@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import CurrentChat from "@/components/currentChat";
+import NoChatsFound from "@/components/noChatsFound";
 
 export default function ChatsPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function ChatsPage() {
     router.replace("/");
   }
 
-  /*
+  
   if(usernameData){
     fetch("http://localhost:8080/api/chats/chatOtherUsers", {
       credentials: "include",
@@ -33,12 +34,14 @@ export default function ChatsPage() {
             response.json().then((data) => {
                 setOtherUsers(data);
                 if(data.length > 0){
-                    setCurrentOtherUser("bob");
+                    setCurrentOtherUser(data[0]);
+                } else {
+                    setCurrentOtherUser("");
                 }
             });
         })
   }
-  */
+  
   return (
     <div className="flex flex-col w-full mx-auto h-screen bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-6 rounded-lg shadow-lg">
         <header className="flex justify-between items-center mb-6">
@@ -50,6 +53,7 @@ export default function ChatsPage() {
             </button>
         </header>
         <div className="flex h-full">
+          {currentOtherUser && currentOtherUser !== "" &&
             <div className="flex-grow p-4 overflow-y-auto">
                 {otherUsers.map((otherUser, index) => (
                     <button
@@ -61,10 +65,13 @@ export default function ChatsPage() {
                     </button>
                 ))}
             </div>
+            }
             <div className="flex-grow overflow-y-scroll p-4">
                 {
-                  currentOtherUser && 
+                  currentOtherUser && currentOtherUser !== ""  ?
                     <CurrentChat user={"bob"} otherUser={currentOtherUser} />
+                    :
+                    <NoChatsFound />
                 }
             </div>
         </div>
