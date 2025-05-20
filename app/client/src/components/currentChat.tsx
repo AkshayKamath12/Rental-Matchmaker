@@ -1,10 +1,44 @@
+import { Client } from '@stomp/stompjs';
+import { useEffect } from 'react';
+import SockJS from 'sockjs-client';
+import { getCookie } from 'cookies-next';
+
 interface CurrentChatProps {
-    user?: String;
-    otherUser?: String;
+    user: String;
+    otherUser: String;
 }
 
 
 export default function CurrentChat({user, otherUser}: CurrentChatProps) {
+    useEffect(() => {
+        const jwtToken = getCookie("jwt-token");
+        const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
+
+        const client = new Client({
+            webSocketFactory: () => socket,
+            reconnectDelay: 5000,
+            debug: (str) => console.log(str),
+        });
+
+        client.onConnect = (frame) => {
+            console.log('Connected: ', frame);
+            client.subscribe('/topic/messages', (message) => {
+                console.log('Received: ', message.body);
+            });
+        };
+
+        client.onStompError = (frame) => {
+            console.error('STOMP error: ', frame);
+        };
+
+        client.activate();
+
+        return () => {
+            client.deactivate();
+        };
+
+    }, []);
+
     const messages = [
         { sender: "bob", text: "Hello!" },
         { sender: "alice", text: "Hi there!" },

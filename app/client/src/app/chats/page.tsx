@@ -7,8 +7,8 @@ import NoChatsFound from "@/components/noChatsFound";
 
 export default function ChatsPage() {
   const router = useRouter();
-  const [otherUsers, setOtherUsers] = useState<String []>([]);
-  const [currentOtherUser, setCurrentOtherUser] = useState<String | null>(null);
+  const [otherUsers, setOtherUsers] = useState<String []>(["Amelia"]);
+  const [currentOtherUser, setCurrentOtherUser] = useState<String | null>("Amelia");
   const [startedFetching, setStartedFetching] = useState(false);
 
   const getUsername = async () => {
@@ -26,7 +26,7 @@ export default function ChatsPage() {
     router.replace("/");
   }
 
-  
+  /*
   if(usernameData && !startedFetching){
     setStartedFetching(true);
     fetch("http://localhost:8080/api/chats/chatOtherUsers", {
@@ -42,7 +42,7 @@ export default function ChatsPage() {
                 }
             });
         })
-  }
+  }*/
   
   return (
     <div className="flex flex-col w-full mx-auto h-screen bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-6 rounded-lg shadow-lg">
