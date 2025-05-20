@@ -7,8 +7,9 @@ import NoChatsFound from "@/components/noChatsFound";
 
 export default function ChatsPage() {
   const router = useRouter();
-  const [otherUsers, setOtherUsers] = useState<String []>(["bob", "alice", "charlie"]);
-  const [currentOtherUser, setCurrentOtherUser] = useState<String | null>("bob");
+  const [otherUsers, setOtherUsers] = useState<String []>([]);
+  const [currentOtherUser, setCurrentOtherUser] = useState<String | null>(null);
+  const [startedFetching, setStartedFetching] = useState(false);
 
   const getUsername = async () => {
     return fetch("http://localhost:8080/api/username", {
@@ -26,7 +27,8 @@ export default function ChatsPage() {
   }
 
   
-  if(usernameData){
+  if(usernameData && !startedFetching){
+    setStartedFetching(true);
     fetch("http://localhost:8080/api/chats/chatOtherUsers", {
       credentials: "include",
     })
