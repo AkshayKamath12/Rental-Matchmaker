@@ -22,7 +22,7 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
 
         client.onConnect = (frame) => {
             console.log('Connected: ', frame);
-            client.subscribe('/topic/messages', (message) => {
+            client.subscribe('/user/queue/reply', (message) => {
                 console.log('Received: ', message.body);
             });
         };
