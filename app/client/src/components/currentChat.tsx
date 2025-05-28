@@ -1,15 +1,54 @@
 import { Client } from '@stomp/stompjs';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { getCookie } from 'cookies-next';
+import { useQuery } from '@tanstack/react-query';
 
 interface CurrentChatProps {
     user: String;
     otherUser: String;
 }
 
+interface ChatMessage {
+    id?: number;
+    fromUser: String;
+    toUser: String;
+    content: String;
+    timestamp?: Date;
+}
+
+
 
 export default function CurrentChat({user, otherUser}: CurrentChatProps) {
+    const clientRef = useRef<Client | null>(null);
+    const messageRef = useRef<HTMLTextAreaElement | null>(null);
+    const [chatHistoryDisplay, setChatHistoryDisplay] = useState<ChatMessage[]>([]);
+
+    
+
+    const fetchChatsWithOtherUser = async (otherUser: String) => {
+        const response = await fetch(`http://localhost:8080/api/chats/chatHistory/${otherUser}`, {
+            credentials: "include",
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    }
+
+    const { data: chatHistory, isLoading, isError } = useQuery({
+        queryKey: ['chatHistory', otherUser],
+        queryFn: () => fetchChatsWithOtherUser(otherUser),
+    });
+
+    useEffect(() => {
+        if (chatHistory) setChatHistoryDisplay(chatHistory);
+    }, [chatHistory]);
+    //var chatHistoryDisplay: ChatMessage[] | null = null;
+    //if (chatHistory && !chatHistoryDisplay){
+    //    chatHistoryDisplay = chatHistory;
+    //}
+
     useEffect(() => {
         const jwtToken = getCookie("jwt-token");
         const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
@@ -18,17 +57,22 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
             webSocketFactory: () => socket,
             reconnectDelay: 5000,
             debug: (str) => console.log(str),
+            onWebSocketError: (evt) => {
+                console.error('WebSocket error:', evt);
+            }
         });
 
         client.onConnect = (frame) => {
             console.log('Connected: ', frame);
-            client.subscribe('/user/queue/reply', (message) => {
-                const data = JSON.parse(message.body);
-                if (data.sender === otherUser) {
-                    console.log(`Message from ${otherUser}: `, data.content);
-                } else {
-                    console.log(`Ignoring message from ${data.sender}`);
+            client.subscribe(`/user/${user}/queue/reply`, (message) => {
+                const newMessage = JSON.parse(message.body);
+                const savedMessage = {
+                    fromUser: newMessage.sender,
+                    toUser: newMessage.recipient,
+                    content: newMessage.content,
                 }
+                console.log('New message received: ', savedMessage);
+                setChatHistoryDisplay(prev => [...prev, newMessage]);
             });
         };
 
@@ -37,6 +81,7 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
         };
 
         client.activate();
+        clientRef.current = client;
 
         return () => {
             client.deactivate();
@@ -44,11 +89,30 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
 
     }, []);
 
-    const messages = [
-        { sender: "bob", text: "Hello!" },
-        { sender: "alice", text: "Hi there!" },
-        { sender: "bob", text: "How are you?" },
-        { sender: "alice", text: "I'm good, thanks!" },]
+    const sendMessage = () => {
+        if (clientRef.current && clientRef.current.connected) {
+            const messageContent = messageRef.current?.value.trim();
+            if (!messageContent) {
+                console.error('Message content cannot be empty');
+                return;
+            }
+            messageRef.current!.value = ''; 
+            const message = {
+                sender: user,
+                recipient: otherUser,
+                content: messageContent,
+            };
+            clientRef.current.publish({
+                destination: '/app/private',
+                body: JSON.stringify(message),
+            });
+            console.log(`Message sent to ${otherUser}: `, messageContent);
+            setChatHistoryDisplay(prev => [...prev, { fromUser: user, toUser: otherUser, content: messageContent }]);
+        } else {
+            console.error('WebSocket is not connected');
+        }
+    }
+
     return (
         <div className="flex flex-col h-full">
             <div className="flex items-center justify-between p-4 bg-gray-800 text-white">
@@ -60,13 +124,25 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
                 </button>
             </div>
             <div className="flex-grow p-4 overflow-y-auto">
-                {messages.map((message, index) => (
-                    <div key={index} className={`mb-4 ${message.sender === user ? "text-right" : "text-left"}`}>
-                        <div className={`inline-block px-4 py-2 rounded-lg ${message.sender === user ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}>
-                            {message.text}
+                {chatHistoryDisplay && chatHistoryDisplay.map((message: ChatMessage) => (
+                    <div className={`mb-4 ${message.fromUser != user ? "text-left" : "text-right"}`} key={message.id}>
+                        <div className={`inline-block px-4 py-2 rounded-lg ${message.fromUser == user ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}>
+                            {message.content}
                         </div>
                     </div>
                 ))}
+                <textarea
+                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Type your message here..."
+                    rows={3}
+                    ref={messageRef}
+                />
+                <button
+                    onClick={sendMessage}
+                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    Send
+                </button>
             </div>
         </div>
     );
