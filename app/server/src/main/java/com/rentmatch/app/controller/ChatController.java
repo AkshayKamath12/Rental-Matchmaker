@@ -43,4 +43,13 @@ public class ChatController {
         messagingTemplate.convertAndSendToUser(
                 receiver, "/queue/reply", msg);
     }
+
+    @PostMapping("/privateRegular")
+    public void privateRegularMessage(@RequestBody ChatMessageDTO msg, Principal principal) {
+        String sender = principal.getName();
+        String receiver = msg.getRecipient();
+        ChatMessage chatMessage = new ChatMessage(sender, receiver, msg.getContent(), LocalDateTime.now());
+        chatMessageRepository.save(chatMessage);
+    }
+
 }
