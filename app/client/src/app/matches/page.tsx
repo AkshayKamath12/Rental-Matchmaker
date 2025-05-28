@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import MatchMessageChatModal from "@/components/MatchMessageModal";
 
 type match = {
   username: string;
@@ -13,6 +14,7 @@ export default function MatchesPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [range, setRange] = useState<number>(25);
   const [matches, setMatches] = useState<match[]>([]);
+  const [modalUsername, setModalUsername] = useState<string>("");
   console.log(matches);
 
   function exit() {
@@ -32,6 +34,24 @@ export default function MatchesPage() {
     }else{
       setRange(value);
     }
+  }
+
+  function handleMessageSend(recipient: string, message: string) {
+    fetch("http://localhost:8080/api/chats/privateRegular", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        recipient: recipient,
+        content: message,
+      }),
+    });
+
+    console.log(`Sending message to ${recipient}: ${message}`);
+    setModalUsername("");
+    
   }
 
   const findMatches = async () => {
@@ -111,11 +131,18 @@ export default function MatchesPage() {
               >
                 <td className="py-3 px-4">{match.username}</td>
                 <td className="py-3 px-4">{match.score}</td>
-                <td className=""><button className="bg-blue-500 rounded-lg p-2">Message</button></td>
+                <td className=""><button onClick={() => {setModalUsername(match.username)}} className="bg-blue-500 rounded-lg p-2">Message</button></td>
               </tr>
             ))}
           </tbody>
         </table>
+        {
+          modalUsername && <MatchMessageChatModal
+            matchUsername={modalUsername}
+            closeModal={() => setModalUsername("")}
+            sendMessage={handleMessageSend}
+          />
+        }
       </div>
     </div>
   );
