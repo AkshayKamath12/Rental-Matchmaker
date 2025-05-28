@@ -77,7 +77,7 @@ public class MatchesService {
                 continue;
             }
             Profile matchProfile = submittedUserProfile.get();
-            if(!matchProfile.getUsername().equals(user.getEmail())){
+            if(!matchProfile.getUsername().equals(user.getUsername())){
                 matches.add(matchProfile);
             }else{
                 userProfile = matchProfile;
@@ -96,7 +96,7 @@ public class MatchesService {
             if(!username.equals(profileUsername)) {
                 double distanceToUser = distance(latitude1, longitude1, matchProfile.getLatitude(), matchProfile.getLongitude());
                 if (distanceToUser <= distance) {
-                    Optional<User> matchUser = userRepository.findByEmail(profileUsername);
+                    Optional<User> matchUser = userRepository.findByUsername(profileUsername);
                     if (!matchUser.isPresent()) {
                         continue;
                     }
