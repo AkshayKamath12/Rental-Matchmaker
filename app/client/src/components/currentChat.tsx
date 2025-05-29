@@ -23,7 +23,7 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
     const clientRef = useRef<Client | null>(null);
     const messageRef = useRef<HTMLTextAreaElement | null>(null);
     const [chatHistoryDisplay, setChatHistoryDisplay] = useState<ChatMessage[]>([]);
-
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
     
 
     const fetchChatsWithOtherUser = async (otherUser: String) => {
@@ -42,12 +42,20 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
     });
 
     useEffect(() => {
-        if (chatHistory) setChatHistoryDisplay(chatHistory);
+        if (chatHistory){ 
+            setChatHistoryDisplay(chatHistory);
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+            } 
+        };
     }, [chatHistory]);
-    //var chatHistoryDisplay: ChatMessage[] | null = null;
-    //if (chatHistory && !chatHistoryDisplay){
-    //    chatHistoryDisplay = chatHistory;
-    //}
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [chatHistoryDisplay]);
+
 
     useEffect(() => {
         const jwtToken = getCookie("jwt-token");
@@ -123,7 +131,7 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
                     </svg>
                 </button>
             </div>
-            <div className="flex-grow p-4 overflow-y-auto">
+            <div className="flex flex-col p-4 overflow-y-scroll h-[50vh]">
                 {chatHistoryDisplay && chatHistoryDisplay.map((message: ChatMessage) => (
                     <div className={`mb-4 ${message.fromUser != user ? "text-left" : "text-right"}`} key={message.id}>
                         <div className={`inline-block px-4 py-2 rounded-lg ${message.fromUser == user ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}>
@@ -131,19 +139,21 @@ export default function CurrentChat({user, otherUser}: CurrentChatProps) {
                         </div>
                     </div>
                 ))}
-                <textarea
-                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Type your message here..."
-                    rows={3}
-                    ref={messageRef}
-                />
-                <button
-                    onClick={sendMessage}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    Send
-                </button>
+                <div ref={messagesEndRef} className="h-0" />{ /* This empty div is used to scroll to the bottom of the chat history */}
+                
             </div>
+            <textarea
+                className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Type your message here..."
+                rows={3}
+                ref={messageRef}
+            />
+            <button
+                onClick={sendMessage}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+                Send
+            </button>
         </div>
     );
 
