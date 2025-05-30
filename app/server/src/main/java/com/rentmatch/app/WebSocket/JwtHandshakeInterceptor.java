@@ -21,12 +21,10 @@ import java.util.Map;
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
     private JwtUtil jwtUtil;
-    private AuthenticationManager authenticationManager;
     private UserDetailsService userDetailsService;
 
-    public JwtHandshakeInterceptor(JwtUtil jwtUtil, AuthenticationManager authenticationManager,UserDetailsService userDetailsService) {
+    public JwtHandshakeInterceptor(JwtUtil jwtUtil,UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
-        this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
     }
 

@@ -31,7 +31,6 @@ public class ChatController {
     @GetMapping("/chatOtherUsers")
     public List<String> chatOtherUsers(Principal principal) {
        String username = principal.getName();
-       System.out.println(username);
        return chatMessageRepository.findAllOtherUsers(username);
     }
 
@@ -39,7 +38,6 @@ public class ChatController {
     public void privateMessage(@RequestBody ChatMessageDTO msg, Principal principal) {
         String sender = principal.getName();
         String receiver = msg.getRecipient();
-        System.out.println(sender + ": " + receiver + ": " + ": " + msg.getContent() + ": " + LocalDateTime.now());
         ChatMessage chatMessage = new ChatMessage(sender, receiver, msg.getContent(), LocalDateTime.now());
         chatMessageRepository.save(chatMessage);
         messagingTemplate.convertAndSendToUser(

@@ -15,13 +15,10 @@ public class JwtAuthChannelInterceptor implements ChannelInterceptor {
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             Authentication auth = (Authentication) accessor.getSessionAttributes().get("user");
-            System.out.println("WebSocket CONNECT for: " + auth.getName());
-            System.out.println("connected user" + accessor.getUser());
             if (auth != null) {
                 accessor.setUser(auth);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } else {
-                System.out.println("no auth");
                 return null;
             }
         }

@@ -3,6 +3,7 @@ package com.rentmatch.app.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +13,11 @@ import java.util.Map;
 
 @Component
 public class JwtUtil {
+    @Value("${jwt.secret}")
+    private String secret;
 
-    private String secret = "testsecretkey"; // will replace this with a value in a .env file
-
-    private int jwtExpirationInMs = 3600000;
+    @Value("${jwt.duration}")
+    private int jwtExpirationInMs;
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();

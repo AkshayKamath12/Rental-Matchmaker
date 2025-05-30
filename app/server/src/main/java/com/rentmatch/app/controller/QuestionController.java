@@ -1,51 +1,33 @@
 package com.rentmatch.app.controller;
 
-
-import com.rentmatch.app.dao.UserRepository;
 import com.rentmatch.app.entity.Question;
-import com.rentmatch.app.entity.User;
 import com.rentmatch.app.service.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
+import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api")
 public class QuestionController {
     private QuestionService questionService;
-    private UserRepository userRepository;
 
-    public QuestionController(QuestionService questionService, UserRepository userRepository) {
+    public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
-        this.userRepository = userRepository;
     }
 
-    private String getLoggedUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
-            String name = auth.getName();
-            Optional<User> foundUser = userRepository.findByUsernameOrEmail(name, name);
-            if (foundUser.isPresent()) {
-                return foundUser.get().getUsername();
-            }
-        }
-        return null;
-    }
     @GetMapping("/answers")
-    public List<Question> getQuestions() {
-        String loggedUser = getLoggedUser();
+    public List<Question> getQuestions(Principal principal) {
+        String loggedUser = principal.getName();
         return questionService.findAll(loggedUser);
     }
 
     @GetMapping("/answers/{questionNum}")
-    public Question getQuestion(@PathVariable int questionNum) {
-        String loggedUser = getLoggedUser();
+    public Question getQuestion(@PathVariable int questionNum, Principal principal) {
+        String loggedUser = principal.getName();
         if (loggedUser != null) {
             return questionService.findQuestion(loggedUser, questionNum);
         }else {
@@ -54,8 +36,8 @@ public class QuestionController {
     }
 
     @PostMapping("/answers")
-    public ResponseEntity<String> setQuestion(@RequestBody Question question) {
-        String loggedUser = getLoggedUser();
+    public ResponseEntity<String> setQuestion(@RequestBody Question question, Principal principal) {
+        String loggedUser = principal.getName();
         if (loggedUser != null) {
             Question dbQuestion = questionService.findQuestion(loggedUser, question.getQuestion());
             if (dbQuestion != null) {
