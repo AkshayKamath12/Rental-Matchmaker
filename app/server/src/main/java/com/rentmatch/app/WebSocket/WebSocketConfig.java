@@ -15,19 +15,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private JwtUtil jwtUtil;
-    private AuthenticationManager authenticationManager;
     private UserDetailsService userDetailsService;
 
-    public WebSocketConfig(JwtUtil jwtUtil, AuthenticationManager authenticationManager, UserDetailsService userDetailsService) {
+    public WebSocketConfig(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
-        this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .addInterceptors(new JwtHandshakeInterceptor(jwtUtil, authenticationManager, userDetailsService))
+                .addInterceptors(new JwtHandshakeInterceptor(jwtUtil, userDetailsService))
                 .setAllowedOriginPatterns("*").withSockJS();
     }
 

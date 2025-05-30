@@ -23,7 +23,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     private JwtUtil jwtUtil;
     private UserDetailsService userDetailsService;
 
-    public JwtHandshakeInterceptor(JwtUtil jwtUtil,UserDetailsService userDetailsService) {
+    public JwtHandshakeInterceptor(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
