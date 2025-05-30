@@ -1,5 +1,6 @@
 # Welcome to RentMatch! 
 
+## Overview
 This is a full-stack platform for connecting aspiring renters. The basis for this idea originated from my own difficulties in college with finding the right people to rent properties with. 
 
 Many people I met were either not great fits or had needs that didn’t align with my own. This tool matches people based on housing needs and streamlines the communication process.
