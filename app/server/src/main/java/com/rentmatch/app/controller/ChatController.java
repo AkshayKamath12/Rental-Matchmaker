@@ -2,7 +2,7 @@ package com.rentmatch.app.controller;
 
 
 import com.rentmatch.app.dao.ChatMessageRepository;
-import com.rentmatch.app.dto.ChatMessageDTO;
+import com.rentmatch.app.DTO.ChatMessageDTO;
 import com.rentmatch.app.entity.ChatMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

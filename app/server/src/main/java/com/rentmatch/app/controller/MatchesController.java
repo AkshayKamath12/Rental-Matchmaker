@@ -1,7 +1,7 @@
 package com.rentmatch.app.controller;
 
 import com.rentmatch.app.dao.UserRepository;
-import com.rentmatch.app.dto.MatchDTO;
+import com.rentmatch.app.DTO.MatchDTO;
 import com.rentmatch.app.entity.User;
 import com.rentmatch.app.service.MatchesService;
 import org.springframework.security.core.Authentication;

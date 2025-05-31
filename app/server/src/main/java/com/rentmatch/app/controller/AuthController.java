@@ -1,7 +1,7 @@
 package com.rentmatch.app.controller;
 
-import com.rentmatch.app.dto.LoginDTO;
-import com.rentmatch.app.dto.SignupDTO;
+import com.rentmatch.app.DTO.LoginDTO;
+import com.rentmatch.app.DTO.SignupDTO;
 import com.rentmatch.app.dao.RoleRepository;
 import com.rentmatch.app.dao.UserRepository;
 import com.rentmatch.app.entity.Role;
