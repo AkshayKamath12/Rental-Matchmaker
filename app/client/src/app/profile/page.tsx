@@ -1,6 +1,6 @@
 "use client";
 
-import Autocomplete from "react-google-autocomplete";
+import PlaceAutocomplete from "react-google-autocomplete";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -69,7 +69,7 @@ export default function DemographicPage() {
         <p className="text-lg font-medium text-gray-700 mb-6 text-center">
           Enter the location you would like to rent around
         </p>
-        <Autocomplete
+        <PlaceAutocomplete
           apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
           style={{
             width: "100%",
