@@ -18,7 +18,7 @@ public class SeedRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        logger.info("Seeding Roles...");
+        logger.info("Seeding Roles....");
 
         if (roleRepository.findByName("ROLE_USER").isEmpty()) {
             logger.info("Role User not found");

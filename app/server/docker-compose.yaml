@@ -26,8 +26,8 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      JWT_SECRET: "iliketomoveitmoveit"
-      JWT_DURATION: 3600000
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_DURATION: ${JWT_DURATION}
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/rentmatch
       SPRING_DATASOURCE_USERNAME: springstudent
       SPRING_DATASOURCE_PASSWORD: springstudent
