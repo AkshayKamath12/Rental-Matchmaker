@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 export default function RegisterPage() {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const Router = useRouter();
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -32,6 +33,13 @@ export default function RegisterPage() {
     if(password !== confirmPassword){
       setError("passwords do not match")
     }
+
+    if(!validateEmail(email)){
+      setError("invalid email");
+      return;
+    }
+
+    setError(null);
     
 
     return fetch("http://localhost:8080/api/auth/register", {
@@ -50,6 +58,10 @@ export default function RegisterPage() {
         Router.replace("/login");
       }
     });
+  }
+
+  function validateEmail(email: string): boolean {
+    return emailRegex.test(email);
   }
 
   function returnToLogin(){
