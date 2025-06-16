@@ -34,6 +34,7 @@ export default function LoginPage() {
 
   async function handleLogin() {
     console.log("logging in");
+    setError(null);
     const result = await getJWT();
     if (result) {
       setCookie("jwt-token", result, { maxAge: 60 * 60 }); 
